@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/login">
+
+    <fragment
+        android:id="@+id/login"
+        android:name="com.example.guysdestiny.Login"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_login_to_signUp"
+            app:destination="@id/signUp" />
+        <action
+            android:id="@+id/action_login_to_wifiList"
+            app:destination="@id/wifiList" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUp"
+        android:name="com.example.guysdestiny.SignUp"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUp_to_login"
+            app:destination="@id/login" />
+    </fragment>
+    <fragment
+        android:id="@+id/wifiList"
+        android:name="com.example.guysdestiny.WifiList"
+        android:label="fragment_wifi_list"
+        tools:layout="@layout/fragment_wifi_list" >
+        <action
+            android:id="@+id/action_wifiList_to_postList"
+            app:destination="@id/postList" />
+        <action
+            android:id="@+id/action_wifiList_to_contactList"
+            app:destination="@id/contactList" />
+    </fragment>
+    <fragment
+        android:id="@+id/contactList"
+        android:name="com.example.guysdestiny.ContactList"
+        android:label="fragment_contact_list"
+        tools:layout="@layout/fragment_contact_list" >
+        <action
+            android:id="@+id/action_contactList_to_wifiList"
+            app:destination="@id/wifiList" />
+        <action
+            android:id="@+id/action_contactList_to_chat"
+            app:destination="@id/chat" />
+    </fragment>
+    <fragment
+        android:id="@+id/postList"
+        android:name="com.example.guysdestiny.PostList"
+        android:label="fragment_post_list"
+        tools:layout="@layout/fragment_post_list" >
+        <action
+            android:id="@+id/action_postList_to_addPost"
+            app:destination="@id/addPost" />
+        <action
+            android:id="@+id/action_postList_to_wifiList"
+            app:destination="@id/wifiList" />
+        <action
+            android:id="@+id/action_postList_to_chat"
+            app:destination="@id/chat" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPost"
+        android:name="com.example.guysdestiny.AddPost"
+        android:label="fragment_add_post"
+        tools:layout="@layout/fragment_add_post" >
+        <action
+            android:id="@+id/action_addPost_to_postList"
+            app:destination="@id/postList" />
+    </fragment>
+    <fragment
+        android:id="@+id/chat"
+        android:name="com.example.guysdestiny.Chat"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/action_chat_to_postList"
+            app:destination="@id/postList" />
+        <action
+            android:id="@+id/action_chat_to_contactList"
+            app:destination="@id/contactList" />
+    </fragment>
+</navigation>
