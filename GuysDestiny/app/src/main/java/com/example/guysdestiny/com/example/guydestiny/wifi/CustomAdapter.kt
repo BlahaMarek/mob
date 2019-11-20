@@ -17,7 +17,7 @@ class CustomAdapter(val wifiList: ArrayList<WifiData>) : RecyclerView.Adapter<Cu
         holder.textViewName.text = wifi.name
 
         holder.card.setOnClickListener{
-            Log.d("xxx", "klikol si $position")
+            Log.d("xxx", "klikol si ${wifi.name}" )
         }
     }
 
