@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/login">
+    app:startDestination="@id/wifiList">
 
     <fragment
         android:id="@+id/login"
@@ -28,9 +28,9 @@
     </fragment>
     <fragment
         android:id="@+id/wifiList"
-        android:name="com.example.guysdestiny.WifiList"
+        android:name="com.example.guysdestiny.com.example.guydestiny.wifi.WifiList"
         android:label="fragment_wifi_list"
-        tools:layout="@layout/fragment_wifi_list" >
+        tools:layout="@layout/fragment_wifi_list">
         <action
             android:id="@+id/action_wifiList_to_postList"
             app:destination="@id/postList" />
