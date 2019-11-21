@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/wifiList"
-        android:name="com.example.guysdestiny.com.example.guydestiny.wifi.WifiList"
+        android:name="com.example.guysdestiny.wifi.WifiList"
         android:label="fragment_wifi_list"
         tools:layout="@layout/fragment_wifi_list">
         <action

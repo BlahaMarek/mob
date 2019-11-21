@@ -1,4 +1,4 @@
-package com.example.guysdestiny.com.example.guydestiny.wifi
+package com.example.guysdestiny.wifi
 
 class WifiData (
     val name: String,

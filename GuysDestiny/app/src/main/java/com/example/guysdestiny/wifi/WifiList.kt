@@ -1,4 +1,4 @@
-package com.example.guysdestiny.com.example.guydestiny.wifi
+package com.example.guysdestiny.wifi
 
 import android.Manifest
 import android.content.Context
@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
-
 
 
 //ToDo:

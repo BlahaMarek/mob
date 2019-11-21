@@ -1,4 +1,4 @@
-package com.example.guysdestiny.com.example.guydestiny.wifi
+package com.example.guysdestiny.wifi
 
 import android.util.Log
 import android.view.LayoutInflater
