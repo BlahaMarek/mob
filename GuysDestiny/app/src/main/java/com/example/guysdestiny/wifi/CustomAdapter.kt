@@ -23,8 +23,8 @@ class CustomAdapter(val wifiList: ArrayList<WifiData>) : RecyclerView.Adapter<Cu
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.wifi_card_layout, parent, false)
-        val viewHolder = ViewHolder(v)
-        return viewHolder
+
+        return ViewHolder(v)
     }
 
     override fun getItemCount(): Int {

@@ -13,7 +13,16 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
+import com.example.guysdestiny.services.wifiService.WifiListResponse
+import com.example.guysdestiny.services.wifiService.WifiListRequest
+import com.example.guysdestiny.services.wifiService.WifiService
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 //ToDo:
@@ -34,6 +43,42 @@ class WifiList : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val client = OkHttpClient.Builder().addInterceptor{ chain ->
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer ec314023857a3f94e5e350318bad01f492240739")
+                .build()
+            chain.proceed(newRequest)
+        }.build()
+
+
+        val retrofit = Retrofit.Builder()
+            .client(client)
+            .baseUrl("http://zadanie.mpage.sk")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(WifiService::class.java)
+        val call: Call<WifiListResponse> = service.getWifiList(WifiListRequest("c95332ee022df8c953ce470261efc695ecf3e784","145"))
+
+        call.enqueue(object : Callback<WifiListResponse> {
+            override fun onFailure(call: Call<WifiListResponse>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(
+                call: Call<WifiListResponse>,
+                response: Response<WifiListResponse>
+            ) {
+//                val wifiListResponse = response.body()!!
+//                val hnoj = wifiListResponse.roomid + " hnoj"
+                Log.d("goodRequest",  response.code().toString())
+//                if (response.code() ==200) {
+//                }
+            }
+        })
+
+
         if (ContextCompat.checkSelfPermission( activity!!.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSIONS_REQUEST_LOCATION)
