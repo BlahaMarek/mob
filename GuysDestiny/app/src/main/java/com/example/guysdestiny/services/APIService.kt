@@ -5,6 +5,7 @@ import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
+import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -23,25 +24,25 @@ interface APIService {
     fun userRefresh(@Body body: RefreshRequest): Call<LoginResponse>
 
     @POST("user/fid.php")
-    fun userFid(@Body body: RefreshRequest): okhttp3.Call
+    fun userFid(@Body body: UserFidRequest): okhttp3.Call
 
     // WIFI
     @POST("room/list.php")
     fun getWifiList(@Body body: WifiListRequest):Call<List<WifiListResponse>>
 
-    @POST("room/message.php")
-    fun messageWifiList(@Body body: MessageRequest): okhttp3.Call
-
     @POST("room/read.php")
     fun readWifiListMessages(@Body body: ReadRequest):Call<List<ReadResponse>>
+
+    @POST("room/message.php")
+    fun postMessageWifiList(@Body body: MessageRequest): okhttp3.Call
 
     // CONTACT
     @POST("contact/list.php")
     fun getContactList(@Body body: ContactListRequest):Call<List<ContactListResponse>>
 
-    @POST("contact/message.php")
-    fun messageContactList(@Body body: ContactMessageRequest): okhttp3.Call
-
     @POST("contact/read.php")
     fun readContactListMessages(@Body body: ContactReadRequest):Call<List<ContactReadResponse>>
+
+    @POST("contact/message.php")
+    fun postMessageContactList(@Body body: ContactMessageRequest): okhttp3.Call
 }
