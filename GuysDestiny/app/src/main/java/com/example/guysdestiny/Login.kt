@@ -11,8 +11,12 @@ import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.lifecycle.ViewModelProviders;
 import com.example.guysdestiny.services.APIClient
+import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
+import com.example.guysdestiny.services.apiModels.contact.ContactReadRequest
+import com.example.guysdestiny.services.apiModels.room.ReadRequest
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.room.WifiListRequest
+import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 
 /**
  * A simple [Fragment] subclass.
@@ -41,14 +45,35 @@ class Login : Fragment() {
 
 
     private fun loginUser(context: Context) {
-        var request: LoginRequest =
-            LoginRequest()
-        request.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-//        request.name = "testusessr"
+//        var request: LoginRequest = LoginRequest()
+//        request.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+//        request.name = "testiceka"
 //        request.password = "heslo123"
-        request.name = "testicek"
-        request.password = "heslo123"
-        apiClient.loginUser(request)
+//        apiClient.createUser(request)
+
+//        var refresh: RefreshRequest = RefreshRequest()
+//        refresh.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+//        refresh.refresh = "530837aa4d2b2ac54da8df2d07b109d46f8c1165"
+//        refresh.uid = "145"
+//        apiClient.refreshUser(refresh)
+
+//        var readWifi: ReadRequest = ReadRequest()
+//        readWifi.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+//        readWifi.room = "aa"
+//        readWifi.uid = "145"
+//        apiClient.getRoomListMessages(readWifi)
+
+//        var contactList: ContactListRequest = ContactListRequest()
+//        contactList.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+//        contactList.uid = "145"
+//        apiClient.getContactList(contactList)
+
+        var contactRead: ContactReadRequest = ContactReadRequest()
+        contactRead.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+        contactRead.uid = "145"
+        contactRead.contact = "7"
+        apiClient.getContactListMessages(contactRead)
+
 
 //        Toast.makeText(context,"Hello Javatpoint", Toast.LENGTH_SHORT).show()
     }
