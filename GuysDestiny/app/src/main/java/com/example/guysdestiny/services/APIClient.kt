@@ -18,21 +18,11 @@ import retrofit2.Response
 
 class APIClient {
     var BASE_URL = "http://zadanie.mpage.sk/"
-    var TOKEN = "c656982ba423fa80f4f3288efae6879e51f2911d"
+    var TOKEN = "b28fde817c5c7061ea369874739ee0c73cf37c86"
 
-    //#####################
-    // USER METHODS
-    //#####################
     fun loginUser(login: LoginRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest = chain.request().newBuilder().build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<LoginResponse> = apiService.userLogin(login)
+        val call: Call<LoginResponse> = prepareRetrofit(false).userLogin(login)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -46,15 +36,8 @@ class APIClient {
     }
 
     fun createUser(login: LoginRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest = chain.request().newBuilder().build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<LoginResponse> = apiService.userCreate(login)
+        val call: Call<LoginResponse> = prepareRetrofit(false).userCreate(login)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -68,15 +51,8 @@ class APIClient {
     }
 
     fun refreshUser(refresh: RefreshRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest = chain.request().newBuilder().build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<LoginResponse> = apiService.userRefresh(refresh)
+        val call: Call<LoginResponse> = prepareRetrofit(false).userRefresh(refresh)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -91,32 +67,13 @@ class APIClient {
 
     // TODO spravit bez response
     fun fidUser(fid: UserFidRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest = chain.request().newBuilder().build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: okhttp3.Call = apiService.userFid(fid)
+        val call: okhttp3.Call = prepareRetrofit(false).userFid(fid)
     }
 
-    //#####################
-    // ROOM METHODS
-    //#####################
     fun getRoomList(request: WifiListRequest) {
 
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
-
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<List<WifiListResponse>> = apiService.getWifiList(request)
+        val call: Call<List<WifiListResponse>> = prepareRetrofit(true).getWifiList(request)
 
         call.enqueue(object : Callback<List<WifiListResponse>> {
             override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
@@ -133,16 +90,8 @@ class APIClient {
     }
 
     fun getRoomListMessages(request: ReadRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<List<ReadResponse>> = apiService.readWifiListMessages(request)
+        val call: Call<List<ReadResponse>> = prepareRetrofit(true).readWifiListMessages(request)
 
         call.enqueue(object : Callback<List<ReadResponse>> {
             override fun onFailure(call: Call<List<ReadResponse>>, t: Throwable) {
@@ -160,33 +109,14 @@ class APIClient {
 
     // TODO spravit bez response
     fun postRoomListMessages(request: MessageRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: okhttp3.Call = apiService.postMessageWifiList(request)
+        val call: okhttp3.Call = prepareRetrofit(true).postMessageWifiList(request)
 
     }
 
-    //#####################
-    // CONTACT METHODS
-    //#####################
     fun getContactList(request: ContactListRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<List<ContactListResponse>> = apiService.getContactList(request)
+        val call: Call<List<ContactListResponse>> = prepareRetrofit(true).getContactList(request)
 
         call.enqueue(object : Callback<List<ContactListResponse>> {
             override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
@@ -203,16 +133,8 @@ class APIClient {
     }
 
     fun getContactListMessages(request: ContactReadRequest) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: Call<List<ContactReadResponse>> = apiService.readContactListMessages(request)
+        val call: Call<List<ContactReadResponse>> = prepareRetrofit(true).readContactListMessages(request)
 
         call.enqueue(object : Callback<List<ContactReadResponse>> {
             override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
@@ -243,5 +165,23 @@ class APIClient {
 
     }
 
+    fun prepareRetrofit(needAuth: Boolean): APIService {
+        var client: OkHttpClient
+        if (needAuth) {
+            client = OkHttpClient.Builder().addInterceptor { chain ->
+                val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
+                chain.proceed(newRequest)
+            }.build()
+        }
+        else {
+            client = OkHttpClient.Builder().addInterceptor { chain ->
+                val newRequest = chain.request().newBuilder().build()
+                chain.proceed(newRequest)
+            }.build()
+        }
 
+        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+        return retrofit.create(APIService::class.java)
+    }
 }

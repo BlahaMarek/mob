@@ -47,14 +47,14 @@ class Login : Fragment() {
     private fun loginUser(context: Context) {
 //        var request: LoginRequest = LoginRequest()
 //        request.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-//        request.name = "testicek"
+//        request.name = "testiceka"
 //        request.password = "heslo123"
-//        apiClient.loginUser(request)
+//        apiClient.createUser(request)
 
 //        var refresh: RefreshRequest = RefreshRequest()
 //        refresh.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-//        refresh.refresh = "c2f7449f82eb47a7a2a73dcf608be4d92131ef03"
-//        refresh.uid = "250"
+//        refresh.refresh = "530837aa4d2b2ac54da8df2d07b109d46f8c1165"
+//        refresh.uid = "145"
 //        apiClient.refreshUser(refresh)
 
 //        var readWifi: ReadRequest = ReadRequest()
@@ -68,11 +68,11 @@ class Login : Fragment() {
 //        contactList.uid = "145"
 //        apiClient.getContactList(contactList)
 
-//        var contactRead: ContactReadRequest = ContactReadRequest()
-//        contactRead.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-//        contactRead.uid = "145"
-//        contactRead.contact = "7"
-//        apiClient.getContactListMessages(contactRead)
+        var contactRead: ContactReadRequest = ContactReadRequest()
+        contactRead.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
+        contactRead.uid = "145"
+        contactRead.contact = "7"
+        apiClient.getContactListMessages(contactRead)
 
 
 //        Toast.makeText(context,"Hello Javatpoint", Toast.LENGTH_SHORT).show()
