@@ -3,7 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
+<<<<<<< HEAD
     app:startDestination="@id/wifiList">
+=======
+    app:startDestination="@id/contactList">
+>>>>>>> bcb954c38492b5e5dc1363487d139ab1423a4463
 
     <fragment
         android:id="@+id/login"
