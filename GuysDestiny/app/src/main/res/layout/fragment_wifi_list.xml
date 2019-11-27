@@ -3,10 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WifiList">
+    tools:context="wifi.WifiList">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_wifiList"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <Button
+        android:background="@drawable/basic_button"
+        android:id="@+id/btnContactList"
+        android:text="Kontakty"
+        android:textSize="14dp"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:layout_gravity="bottom" />
+
 </FrameLayout>
