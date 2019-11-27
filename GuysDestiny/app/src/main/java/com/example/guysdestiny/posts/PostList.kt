@@ -65,7 +65,7 @@ class PostList : Fragment() {
         roomId = arguments?.getString("wifiName").toString()
         if (!viewModel.currentWifi.equals(roomId) && !roomId.equals("public", ignoreCase = true)) {
             Toast.makeText(context, "Na tejto Wifi nie ste pripojeny!", Toast.LENGTH_LONG).show()
-//            new_post_field_id.visibility = View.GONE
+            new_post_field_id.visibility = View.GONE
         }
 
         getRoomList()
