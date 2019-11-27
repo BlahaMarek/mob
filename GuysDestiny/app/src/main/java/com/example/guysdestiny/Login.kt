@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -57,8 +58,8 @@ class Login : Fragment() {
         request.name = "testiceka"
         request.password = "heslo123"
 
-//        request.name = loginName.text.toString()
-//        request.password = passwd.text.toString()
+        request.name = loginName.text.toString()
+        request.password = passwd.text.toString()
 
 //        if (loginName.text.isBlank() || passwd.text.isBlank()) {
 //            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
@@ -78,6 +79,11 @@ class Login : Fragment() {
                 if ( response.body() != null) {
                     user = response.body()!!
                     viewModel.setUser(user)
+                    val inputManager =
+                        activity!!.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputManager.hideSoftInputFromWindow(
+                        view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
+                    )
                     view.findNavController().navigate(R.id.action_login_to_wifiList)
                 } else {
                     Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()

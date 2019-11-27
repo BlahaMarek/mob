@@ -35,19 +35,18 @@ class ContactList : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val contactRequest = ContactListRequest()
-        contactRequest.uid = viewModelData.uid
         val contacts = ArrayList<ContactData>()
-        getContactList(contactRequest, contacts)
+        getContactList(contacts)
         btnWifiList.setOnClickListener {
             view.findNavController().navigate(R.id.wifiList)
         }
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun getContactList(request: ContactListRequest, contacts: ArrayList<ContactData>) {
-
-        val call: Call<List<ContactListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getContactList(request)
+    fun getContactList(contacts: ArrayList<ContactData>) {
+        val contactRequest = ContactListRequest()
+        contactRequest.uid = viewModelData.uid
+        val call: Call<List<ContactListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getContactList(contactRequest)
 
         call.enqueue(object : Callback<List<ContactListResponse>> {
             override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {

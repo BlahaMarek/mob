@@ -21,6 +21,10 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         notifyDataSetChanged()
     }
 
+    fun getMessages():ArrayList<Message>{
+        return messages
+    }
+
     fun setContactUid(uid: String)
     {
         contactUid = uid
