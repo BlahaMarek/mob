@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guysdestiny.R
 
@@ -18,6 +20,8 @@ class CustomAdapter(val wifiList: ArrayList<WifiData>) : RecyclerView.Adapter<Cu
 
         holder.card.setOnClickListener{
             Log.d("xxx", "klikol si ${wifi.name} s id ${wifi.id}" )
+            val bundle = bundleOf("wifiName" to wifi.name)
+            holder.itemView.findNavController().navigate(R.id.action_wifiList_to_postList, bundle)
         }
     }
 

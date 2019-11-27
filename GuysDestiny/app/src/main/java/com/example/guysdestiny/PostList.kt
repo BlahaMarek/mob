@@ -12,13 +12,11 @@ import android.view.ViewGroup
  */
 class PostList : Fragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_post_list, container, false)
     }
 
+// KAROL: z tohto si vytiahnes id roomky, ktore ti posielam:
+//    arguments?.getString("wifiName")!!
 
 }

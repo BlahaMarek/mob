@@ -11,12 +11,7 @@ import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.lifecycle.ViewModelProviders;
 import com.example.guysdestiny.services.APIClient
-import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactReadRequest
-import com.example.guysdestiny.services.apiModels.room.ReadRequest
-import com.example.guysdestiny.services.apiModels.user.LoginRequest
-import com.example.guysdestiny.services.apiModels.room.WifiListRequest
-import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 
 /**
  * A simple [Fragment] subclass.
@@ -32,11 +27,9 @@ class Login : Fragment() {
 
         val view: View = inflater.inflate(R.layout.fragment_login, container, false)
         val loginBtn: Button = view.findViewById(R.id.loginBtn)
-        val testBtn: Button = view.findViewById(R.id.testBtn)
         val gotoSignUpButton: TextView = view.findViewById(R.id.gotoSignBtn)
 
         loginBtn.setOnClickListener { loginUser(activity!!.applicationContext) }
-        testBtn.setOnClickListener { getWifiList(activity!!.applicationContext) }
         gotoSignUpButton.setOnClickListener { signFragment(view) }
 
         viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
@@ -74,17 +67,6 @@ class Login : Fragment() {
         contactRead.contact = "7"
         apiClient.getContactListMessages(contactRead)
 
-
-//        Toast.makeText(context,"Hello Javatpoint", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun getWifiList(context: Context) {
-        var request: WifiListRequest =
-            WifiListRequest()
-        request.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-        request.uid = "145"
-
-        apiClient.getRoomList(request)
 
 //        Toast.makeText(context,"Hello Javatpoint", Toast.LENGTH_SHORT).show()
     }
