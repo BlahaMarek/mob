@@ -1,6 +1,17 @@
-Niektore veci, ktore spominal na cviku ako by sme mali postupovat:
+TODO
+•  Odlhasenie pouzivatela
+•  Obrazovka konverzacie
+	    umoznuje napisanie novej spravy obsahujucej len jeden gif pouzivatelovi kedykolvek na spodku obrazovky.
+•  Uložiť FID (Id pre firebase cloud messaging) na server pomocou webservisu user/fid.php
+•  Odoslanie notifikacie používateľovi (FCM nižšie), ktorému sme poslali privátnu správu. Zachytenie a zobrazenie notifikácii u príjemcu. (Použiť FID, ktoré vráti webservis pri čítaní konverzácii)
+•  Odoslanie notifikacie WiFi skupine (FCM nižšie), do ktorej sme poslali príspevok. Zachytenie a zobrazenie notifikácii u člena skupiny len v prípade, že je aktuálne pripojený na WiFi sieť skupiny. (Použiť FID, ako názov WiFi skupiny)
 
-1. Na vytvorenie zoznamu uzivatelov a miestnosti treba pouzit recyclerView
-2. Takisto nepouzivat findViewById, ale namiesto toho pouzit dataBinding - toto treba este overit na cviku, ci musime
+OTAZKY
+•	posty – realtime ? chyba fid
 
-ak vam nieco napadne, dopisujte.
+TODO
+•	refresh wifi
+•	pridanie dat do nodelview
+•	refreshtoken ak vyprsi pocas pouzivania apky
+
+
