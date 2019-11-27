@@ -80,10 +80,12 @@ class WifiList : Fragment() {
             }
 
             override fun onResponse(call: Call<List<WifiListResponse>>, response: Response<List<WifiListResponse>>) {
-                val res: List<WifiListResponse> = response.body()!!
+                if ( response.body() != null) {
+                    val res: List<WifiListResponse> = response.body()!!
 
-                for(item in res){
-                    wifis.add(WifiData(item.roomid, item.roomid))
+                    for(item in res){
+                        wifis.add(WifiData(item.roomid, item.roomid))
+                    }
                 }
 
                 recyclerView_wifiList?.apply {
