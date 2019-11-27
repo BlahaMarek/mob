@@ -7,7 +7,6 @@ import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 import com.example.guysdestiny.services.apiModels.user.UserFidRequest
-import com.example.guysdestiny.wifi.WifiList
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
