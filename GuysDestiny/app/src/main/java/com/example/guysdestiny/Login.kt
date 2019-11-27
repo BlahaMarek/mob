@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import androidx.lifecycle.ViewModelProviders;
 import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.APIClient
+import com.example.guysdestiny.services.apiModels.contact.ContactMessageRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactReadRequest
 import com.example.guysdestiny.services.apiModels.room.ReadRequest
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
@@ -56,13 +57,13 @@ class Login : Fragment() {
         request.name = "testiceka"
         request.password = "heslo123"
 
-        request.name = loginName.text.toString()
-        request.password = passwd.text.toString()
+//        request.name = loginName.text.toString()
+//        request.password = passwd.text.toString()
 
-        if (loginName.text.isBlank() || passwd.text.isBlank()) {
-            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
-            return
-        }
+//        if (loginName.text.isBlank() || passwd.text.isBlank()) {
+//            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
+//            return
+//        }
 
         val call: Call<LoginResponse> = apiClient.prepareRetrofit(false, "").userLogin(request)
 

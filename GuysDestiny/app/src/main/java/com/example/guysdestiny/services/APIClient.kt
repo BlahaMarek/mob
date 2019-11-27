@@ -9,6 +9,7 @@ import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import com.example.guysdestiny.wifi.WifiList
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Call
@@ -18,7 +19,6 @@ import retrofit2.Response
 
 class APIClient {
     var BASE_URL = "http://zadanie.mpage.sk/"
-    var TOKEN = "5b06114c47dfba60944b51ed60ff396be69f26f8"
 
 
     fun loginUser(login: LoginRequest) {
@@ -66,10 +66,21 @@ class APIClient {
         })
     }
 
-    // TODO spravit bez response
-    fun fidUser(fid: UserFidRequest) {
 
-        val call: okhttp3.Call = prepareRetrofit(true, TOKEN).userFid(fid)
+    fun fidUser(fid: UserFidRequest, TOKEN: String) {
+
+        val call: Call<ResponseBody> = prepareRetrofit(true, TOKEN).userFid(fid)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("user refreshed", response.code().toString())
+            }
+        })
+
     }
 
     fun getRoomList(request: WifiListRequest, TOKEN: String) {
@@ -108,11 +119,19 @@ class APIClient {
         })
     }
 
-    // TODO spravit bez response
     fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
 
-        val call: okhttp3.Call = prepareRetrofit(true, TOKEN).postMessageWifiList(request)
+        val call: Call<ResponseBody> = prepareRetrofit(true, TOKEN).postMessageWifiList(request)
 
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("user refreshed", response.code().toString())
+            }
+        })
     }
 
     fun getContactList(request: ContactListRequest, TOKEN: String) {
@@ -151,18 +170,19 @@ class APIClient {
         })
     }
 
-    // TODO spravit bez response
-    fun postContactListMessages(request: ContactMessageRequest, TOKEN: String) {
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
-            chain.proceed(newRequest)
-        }.build()
 
-        val retrofit = Retrofit.Builder().client(client).baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val apiService = retrofit.create(APIService::class.java)
-        val call: okhttp3.Call = apiService.postMessageContactList(request)
+    fun postContactListMessages(request: ContactMessageRequest, TOKEN: String) {
+        val call: Call<ResponseBody> = prepareRetrofit(true, TOKEN).postMessageContactList(request)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("user refreshed", response.code().toString())
+            }
+        })
 
     }
 
