@@ -14,7 +14,6 @@
         android:maxWidth="240dp"
         android:padding="15dp"
         android:elevation="5dp"
-        android:textColor="#ffffff"
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
         app:layout_constraintRight_toRightOf="parent"

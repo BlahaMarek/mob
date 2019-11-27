@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
+import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_contact_list.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,18 +23,18 @@ import retrofit2.Response
  */
 class ContactList : Fragment() {
     val apiClient = APIClient()
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModelData: LoginResponse
+    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
+        viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
+        viewModelData = viewModel.user.value!!
+
         return inflater.inflate(R.layout.fragment_contact_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val contactRequest = ContactListRequest()
-        contactRequest.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-        contactRequest.uid = "256"
+        contactRequest.uid = viewModelData.uid
         val contacts = ArrayList<ContactData>()
         getContactList(contactRequest, contacts)
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +42,7 @@ class ContactList : Fragment() {
 
     fun getContactList(request: ContactListRequest, contacts: ArrayList<ContactData>) {
 
-        val call: Call<List<ContactListResponse>> = apiClient.prepareRetrofit(true).getContactList(request)
+        val call: Call<List<ContactListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getContactList(request)
 
         call.enqueue(object : Callback<List<ContactListResponse>> {
             override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {

@@ -18,11 +18,12 @@ import retrofit2.Response
 
 class APIClient {
     var BASE_URL = "http://zadanie.mpage.sk/"
-    var TOKEN = "718e52cd1b15312d88d39125256b15264323b43f"
+    var TOKEN = "5b06114c47dfba60944b51ed60ff396be69f26f8"
+
 
     fun loginUser(login: LoginRequest) {
 
-        val call: Call<LoginResponse> = prepareRetrofit(false).userLogin(login)
+        val call: Call<LoginResponse> = prepareRetrofit(false, "").userLogin(login)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -37,7 +38,7 @@ class APIClient {
 
     fun createUser(login: LoginRequest) {
 
-        val call: Call<LoginResponse> = prepareRetrofit(false).userCreate(login)
+        val call: Call<LoginResponse> = prepareRetrofit(false, "").userCreate(login)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -52,7 +53,7 @@ class APIClient {
 
     fun refreshUser(refresh: RefreshRequest) {
 
-        val call: Call<LoginResponse> = prepareRetrofit(false).userRefresh(refresh)
+        val call: Call<LoginResponse> = prepareRetrofit(false, "").userRefresh(refresh)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -68,12 +69,12 @@ class APIClient {
     // TODO spravit bez response
     fun fidUser(fid: UserFidRequest) {
 
-        val call: okhttp3.Call = prepareRetrofit(false).userFid(fid)
+        val call: okhttp3.Call = prepareRetrofit(true, TOKEN).userFid(fid)
     }
 
-    fun getRoomList(request: WifiListRequest) {
+    fun getRoomList(request: WifiListRequest, TOKEN: String) {
 
-        val call: Call<List<WifiListResponse>> = prepareRetrofit(true).getWifiList(request)
+        val call: Call<List<WifiListResponse>> = prepareRetrofit(true, TOKEN).getWifiList(request)
 
         call.enqueue(object : Callback<List<WifiListResponse>> {
             override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
@@ -89,9 +90,9 @@ class APIClient {
         })
     }
 
-    fun getRoomListMessages(request: ReadRequest) {
+    fun getRoomListMessages(request: ReadRequest, TOKEN: String) {
 
-        val call: Call<List<ReadResponse>> = prepareRetrofit(true).readWifiListMessages(request)
+        val call: Call<List<ReadResponse>> = prepareRetrofit(true, TOKEN).readWifiListMessages(request)
 
         call.enqueue(object : Callback<List<ReadResponse>> {
             override fun onFailure(call: Call<List<ReadResponse>>, t: Throwable) {
@@ -108,14 +109,15 @@ class APIClient {
     }
 
     // TODO spravit bez response
-    fun postRoomListMessages(request: MessageRequest) {
+    fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
 
-        val call: okhttp3.Call = prepareRetrofit(true).postMessageWifiList(request)
+        val call: okhttp3.Call = prepareRetrofit(true, TOKEN).postMessageWifiList(request)
+
     }
 
-    fun getContactList(request: ContactListRequest) {
+    fun getContactList(request: ContactListRequest, TOKEN: String) {
 
-        val call: Call<List<ContactListResponse>> = prepareRetrofit(true).getContactList(request)
+        val call: Call<List<ContactListResponse>> = prepareRetrofit(true, TOKEN).getContactList(request)
 
         call.enqueue(object : Callback<List<ContactListResponse>> {
             override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
@@ -131,13 +133,12 @@ class APIClient {
         })
     }
 
-    fun getContactListMessages(request: ContactReadRequest) {
+    fun getContactListMessages(request: ContactReadRequest, TOKEN: String) {
 
-        val call: Call<List<ContactReadResponse>> = prepareRetrofit(true).readContactListMessages(request)
+        val call: Call<List<ContactReadResponse>> = prepareRetrofit(true, TOKEN).readContactListMessages(request)
 
         call.enqueue(object : Callback<List<ContactReadResponse>> {
             override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
-
                 Log.d("badRequest", t.message.toString())
             }
 
@@ -145,13 +146,13 @@ class APIClient {
                 call: Call<List<ContactReadResponse>>,
                 response: Response<List<ContactReadResponse>>
             ) {
-                    Log.d("goodRequest", response.code().toString())
+                Log.d("goodRequest", response.code().toString())
             }
         })
     }
 
     // TODO spravit bez response
-    fun postContactListMessages(request: ContactMessageRequest) {
+    fun postContactListMessages(request: ContactMessageRequest, TOKEN: String) {
         val client = OkHttpClient.Builder().addInterceptor { chain ->
             val newRequest =
                 chain.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
@@ -165,7 +166,7 @@ class APIClient {
 
     }
 
-    fun prepareRetrofit(needAuth: Boolean): APIService {
+    fun prepareRetrofit(needAuth: Boolean, TOKEN: String): APIService {
         var client: OkHttpClient
         if (needAuth) {
             client = OkHttpClient.Builder().addInterceptor { chain ->

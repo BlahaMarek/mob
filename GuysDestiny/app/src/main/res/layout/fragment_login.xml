@@ -28,7 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ems="10"
+            android:layout_marginBottom="10dp"
             android:hint="@string/name"
+            android:background="@drawable/basic_edit_text"
             android:inputType="textPersonName" />
 
         <EditText
@@ -36,23 +38,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
             android:ems="10"
+            android:background="@drawable/basic_edit_text"
             android:inputType="textPassword"
             android:hint="@string/password" />
 
         <Button
             android:id="@+id/loginBtn"
+            android:background="@drawable/basic_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/log" />
-
-        <Button
-            android:id="@+id/noRegBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="bez registracie" />
 
         <TextView
             android:layout_width="wrap_content"

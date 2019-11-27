@@ -24,33 +24,40 @@
 
         <EditText
             android:id="@+id/loginText"
+            android:background="@drawable/basic_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ems="10"
             android:hint="@string/name"
+            android:layout_marginBottom="10dp"
             android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/passwordText"
             android:layout_width="wrap_content"
+            android:background="@drawable/basic_edit_text"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ems="10"
             android:inputType="textPassword"
+            android:layout_marginBottom="10dp"
             android:hint="@string/password" />
 
         <EditText
             android:id="@+id/passwordText2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/basic_edit_text"
             android:layout_gravity="center_horizontal"
             android:ems="10"
             android:inputType="textPassword"
+            android:layout_marginBottom="10dp"
             android:hint="@string/password" />
 
         <Button
             android:id="@+id/signBtn"
+            android:background="@drawable/basic_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

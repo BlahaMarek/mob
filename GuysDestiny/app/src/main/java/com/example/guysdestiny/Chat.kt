@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.APIService
@@ -19,6 +20,7 @@ import com.example.guysdestiny.services.apiModels.contact.ContactReadResponse
 import com.example.guysdestiny.services.apiModels.room.ReadRequest
 import com.example.guysdestiny.services.apiModels.room.ReadResponse
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
+import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_chat.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,12 +33,14 @@ class Chat : Fragment() {
 
     private lateinit var messAdapter: ChatAdapter
     private lateinit var contactUid: String
+    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModelData: LoginResponse
+
     val apiClient = APIClient()
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
+        viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
+        viewModelData = viewModel.user.value!!
+
         return inflater.inflate(R.layout.fragment_chat, container, false)
     }
 
@@ -45,9 +49,8 @@ class Chat : Fragment() {
         val contactReadRequest = ContactReadRequest()
         contactUid = arguments?.getString("contactUid")!!
         messAdapter.setContactUid(contactUid)
-        contactReadRequest.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
         contactReadRequest.contact = contactUid
-        contactReadRequest.uid = "256"
+        contactReadRequest.uid = viewModelData.uid
         getContactListMessages(contactReadRequest)
 
         messageList?.apply {
@@ -87,7 +90,7 @@ class Chat : Fragment() {
 
     fun getContactListMessages(request: ContactReadRequest) {
 
-        val call: Call<List<ContactReadResponse>> = apiClient.prepareRetrofit(true).readContactListMessages(request)
+        val call: Call<List<ContactReadResponse>> = apiClient.prepareRetrofit(true, viewModelData.access ).readContactListMessages(request)
 
         call.enqueue(object : Callback<List<ContactReadResponse>> {
             override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {

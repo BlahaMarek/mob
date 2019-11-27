@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:background="@drawable/post_container"
+        android:background="@drawable/basic_container"
         android:minHeight="50dp"
         android:orientation="vertical">
 
@@ -25,14 +25,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:textColor="#FFFFFF"
                 android:textStyle="bold|italic" />
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:textColor="#FFFFFF"
                 android:text="now"
                 android:textStyle="bold|italic" />
 
@@ -42,8 +40,7 @@
             android:id="@+id/tv_text"
             android:paddingLeft="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF" />
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/iv_gif_view"

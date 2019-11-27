@@ -1,4 +1,7 @@
 package com.example.guysdestiny.models
 
-class User constructor(name: String, uid: String, access: String, refresh: String) {
+class User {
+    var uid: String = ""
+    var access: String = ""
+    var refresh: String = ""
 }

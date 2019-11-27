@@ -11,11 +11,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
 import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.apiModels.room.WifiListRequest
 import com.example.guysdestiny.services.apiModels.room.WifiListResponse
+import com.example.guysdestiny.UserViewModel
+import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,8 +39,14 @@ import retrofit2.Response
 
 class WifiList : Fragment() {
     private val MY_PERMISSIONS_REQUEST_LOCATION = 1
+    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModelData: LoginResponse
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
+        viewModelData = viewModel.user.value!!
+
         return inflater.inflate(R.layout.fragment_wifi_list, container, false)
     }
 
@@ -70,10 +80,9 @@ class WifiList : Fragment() {
     fun getRoomList(wifis: ArrayList<WifiData>) {
         val apiClient = APIClient()
         val request = WifiListRequest()
-        request.api_key = "c95332ee022df8c953ce470261efc695ecf3e784"
-        request.uid = "145"
+        request.uid = viewModelData.uid
 
-        val call: Call<List<WifiListResponse>> = apiClient.prepareRetrofit(true).getWifiList(request)
+        val call: Call<List<WifiListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getWifiList(request)
         call.enqueue(object : Callback<List<WifiListResponse>> {
             override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
                 Log.d("badRequest", t.message.toString())
