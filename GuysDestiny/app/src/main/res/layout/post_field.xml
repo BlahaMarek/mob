@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+
     <LinearLayout
         android:id="@+id/lt_post"
         android:layout_width="match_parent"
@@ -26,24 +27,27 @@
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
+
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAllCaps="true"
-                android:text="now"
-                android:textStyle="bold|italic" />
+                android:textSize="@dimen/gph_search_bar_margin"
+                android:textStyle="italic" />
+
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_text"
-            android:paddingLeft="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:layout_margin="15dp"/>
 
         <ImageView
             android:id="@+id/iv_gif_view"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

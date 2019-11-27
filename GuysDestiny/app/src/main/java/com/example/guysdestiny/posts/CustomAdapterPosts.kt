@@ -20,20 +20,22 @@ import java.util.regex.Pattern
 class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
     RecyclerView.Adapter<CustomAdapterPosts.ViewHolder>() {
 
-    var URL_REGEX = "^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
+    var GIF_REGEX = "/^gif/";
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post: PostModel = posts[position]
-        holder.tvAuthor.text = post.name + ", "
-        if(isUrl(post.message)){
-            Glide.with(holder.thisC).asGif().load(post.message).into(holder.gifView);
-        }else {
+        holder.tvAuthor.text = post.name + ",  "
+        holder.tvTime.text = post.time
+        if (isGif(post.message)) {
+            holder.tvText.visibility = View.GONE
+            Glide.with(holder.thisC).asGif().load(formatUrl(post.message)).into(holder.gifView);
+        } else {
+            holder.gifView.visibility = View.GONE
             holder.tvText.text = post.message
         }
 
-        holder.postLayout.setOnClickListener {
-//            Log.d("xxx", "klikol si $position")
-            val bundle = bundleOf("contactUid" to "255")
+        holder.tvAuthor.setOnClickListener {
+            val bundle = bundleOf("contactUid" to post.uid)
             holder.itemView.findNavController().navigate(R.id.action_postList_to_chat, bundle)
         }
     }
@@ -48,18 +50,20 @@ class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
         return posts.size
     }
 
+    fun formatUrl(message: String): String {
+        return "https://media.giphy.com/media/" + message.replace("gif:", "") + "/giphy.gif"
+    }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvText = itemView.findViewById(R.id.tv_text) as TextView
         val tvAuthor = itemView.findViewById(R.id.tv_author) as TextView
+        val tvTime = itemView.findViewById(R.id.tv_time) as TextView
         val gifView = itemView.findViewById(R.id.iv_gif_view) as ImageView
-        val postLayout = itemView.findViewById(R.id.lt_post) as View
         val thisC = itemView.context
     }
 
-    fun isUrl(message: String): Boolean {
-        val p = Pattern.compile(URL_REGEX)
-        val m = p.matcher(message)
-        return m.find()
+    fun isGif(message: String): Boolean {
+        return message.startsWith("gif:")
     }
 
 }

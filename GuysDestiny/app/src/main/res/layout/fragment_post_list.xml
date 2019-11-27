@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/new_post_field" />
+        <include android:id="@+id/new_post_field_id" layout="@layout/new_post_field" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_posts"
