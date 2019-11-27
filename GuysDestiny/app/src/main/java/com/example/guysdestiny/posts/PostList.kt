@@ -19,10 +19,7 @@ import com.bumptech.glide.Glide
 import com.example.guysdestiny.R
 import com.example.guysdestiny.UserViewModel
 import com.example.guysdestiny.services.APIClient
-import com.example.guysdestiny.services.apiModels.room.ReadRequest
-import com.example.guysdestiny.services.apiModels.room.ReadResponse
-import com.example.guysdestiny.services.apiModels.room.WifiListRequest
-import com.example.guysdestiny.services.apiModels.room.WifiListResponse
+import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.wifi.CustomAdapter
 import com.example.guysdestiny.wifi.WifiData
@@ -36,6 +33,7 @@ import com.giphy.sdk.ui.views.GiphyDialogFragment
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import kotlinx.android.synthetic.main.new_post_field.*
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,6 +46,7 @@ class PostList : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     private lateinit var roomId: String
+    val apiClient = APIClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +63,9 @@ class PostList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         roomId = arguments?.getString("wifiName").toString()
-        if(!viewModel.currentWifi.equals(roomId) && !roomId.equals("public", ignoreCase = true)){
-            Toast.makeText(context,"Na tejto Wifi nie ste pripojeny!", Toast.LENGTH_LONG).show()
-            new_post_field_id.visibility = View.GONE
+        if (!viewModel.currentWifi.equals(roomId) && !roomId.equals("public", ignoreCase = true)) {
+            Toast.makeText(context, "Na tejto Wifi nie ste pripojeny!", Toast.LENGTH_LONG).show()
+//            new_post_field_id.visibility = View.GONE
         }
 
         getRoomList()
@@ -87,8 +86,7 @@ class PostList : Fragment() {
         }
         bt_send_sessage?.setOnClickListener {
             if (et_newMessage?.text.toString().length > 0) {
-                addFakePost(PostModel("1", "xxx", et_newMessage?.text.toString(), "jozo", "2004"))
-                fillPostListView()
+                sendMessage(et_newMessage?.text.toString())
                 et_newMessage?.setText("")
                 et_newMessage?.clearFocus()
                 view.hideKeyboard()
@@ -102,7 +100,7 @@ class PostList : Fragment() {
     }
 
     fun getRoomList() {
-        val apiClient = APIClient()
+
         val request = ReadRequest()
         request.uid = viewModelData.uid
         request.room = roomId
@@ -133,7 +131,7 @@ class PostList : Fragment() {
                             )
                         )
                     }
-
+                    posts.reverse()
                     fillPostListView()
                 }
             }
@@ -142,20 +140,6 @@ class PostList : Fragment() {
 
     fun addFakePost(newPost: PostModel) {
         posts.add(0, newPost)
-    }
-
-    fun initFakeData() {
-        addFakePost(PostModel("1", "xxx", "Ahoooooooj", "jozo", "2004"))
-        addFakePost(PostModel("1", "xxx", "xxxx", "jozo", "2004"))
-        addFakePost(
-            PostModel(
-                "1",
-                "xxx",
-                "https://media.giphy.com/media/WUrKpJUmNAsxTzHhao/giphy.gif",
-                "jozo",
-                "2004"
-            )
-        )
     }
 
     fun initGiphy() {
@@ -169,8 +153,7 @@ class PostList : Fragment() {
         gifsDialog.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener {
             override fun onGifSelected(media: Media) {
                 giphUrl = "gif:" + media.id
-                addFakePost(PostModel("1", "xxx", giphUrl, "jozo", "2004"))
-                fillPostListView()
+                sendMessage(giphUrl)
             }
 
             override fun onDismissed() {}
@@ -178,4 +161,31 @@ class PostList : Fragment() {
 
         gifsDialog.show(activity!!.supportFragmentManager, "shit")
     }
+
+    fun sendMessage(message: String){
+        val messageReq: MessageRequest = MessageRequest()
+        messageReq.message = message
+        messageReq.room = roomId
+        messageReq.uid = viewModelData.uid
+        addFakePost(PostModel(viewModelData.uid, roomId, message, "Me", "Now"))
+        postRoomListMessages(messageReq, viewModelData.access)
+        fillPostListView()
+    }
+
+    fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
+
+        val call: Call<ResponseBody> =
+            apiClient.prepareRetrofit(true, TOKEN).postMessageWifiList(request)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("user refreshed", response.code().toString())
+            }
+        })
+    }
+
 }

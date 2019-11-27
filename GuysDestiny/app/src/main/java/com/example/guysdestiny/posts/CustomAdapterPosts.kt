@@ -20,19 +20,11 @@ import java.util.regex.Pattern
 class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
     RecyclerView.Adapter<CustomAdapterPosts.ViewHolder>() {
 
-    var GIF_REGEX = "/^gif/";
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post: PostModel = posts[position]
         holder.tvAuthor.text = post.name + ",  "
         holder.tvTime.text = post.time
-        if (isGif(post.message)) {
-            holder.tvText.visibility = View.GONE
-            Glide.with(holder.thisC).asGif().load(formatUrl(post.message)).into(holder.gifView);
-        } else {
-            holder.gifView.visibility = View.GONE
-            holder.tvText.text = post.message
-        }
+        holder.tvText.text = post.message
 
         holder.tvAuthor.setOnClickListener {
             val bundle = bundleOf("contactUid" to post.uid)
@@ -44,6 +36,19 @@ class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
         val v = LayoutInflater.from(parent.context).inflate(R.layout.post_field, parent, false)
         val viewHolder = ViewHolder(v)
         return viewHolder
+    }
+
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        var message: String = "" + holder.tvText.text
+        if (isGif(message)) {
+            holder.tvText.visibility = View.GONE
+            holder.gifView.visibility = View.VISIBLE
+            Glide.with(holder.thisC).asGif().load(formatUrl(message)).into(holder.gifView);
+        } else {
+            holder.gifView.visibility = View.GONE
+            holder.tvText.visibility = View.VISIBLE
+        }
     }
 
     override fun getItemCount(): Int {
