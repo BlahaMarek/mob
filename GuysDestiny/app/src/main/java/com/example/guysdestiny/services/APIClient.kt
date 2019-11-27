@@ -18,7 +18,7 @@ import retrofit2.Response
 
 class APIClient {
     var BASE_URL = "http://zadanie.mpage.sk/"
-    var TOKEN = "0a10b3cbe0ca07caf1b72315517720ecb2358a7a"
+    var TOKEN = "718e52cd1b15312d88d39125256b15264323b43f"
 
     fun loginUser(login: LoginRequest) {
 
@@ -71,6 +71,24 @@ class APIClient {
         val call: okhttp3.Call = prepareRetrofit(false).userFid(fid)
     }
 
+    fun getRoomList(request: WifiListRequest) {
+
+        val call: Call<List<WifiListResponse>> = prepareRetrofit(true).getWifiList(request)
+
+        call.enqueue(object : Callback<List<WifiListResponse>> {
+            override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
+                Log.d("badRequest", t.message.toString())
+            }
+
+            override fun onResponse(
+                call: Call<List<WifiListResponse>>,
+                response: Response<List<WifiListResponse>>
+            ) {
+                Log.d("goodRequest", response.code().toString())
+            }
+        })
+    }
+
     fun getRoomListMessages(request: ReadRequest) {
 
         val call: Call<List<ReadResponse>> = prepareRetrofit(true).readWifiListMessages(request)
@@ -93,7 +111,6 @@ class APIClient {
     fun postRoomListMessages(request: MessageRequest) {
 
         val call: okhttp3.Call = prepareRetrofit(true).postMessageWifiList(request)
-
     }
 
     fun getContactList(request: ContactListRequest) {
@@ -120,6 +137,7 @@ class APIClient {
 
         call.enqueue(object : Callback<List<ContactReadResponse>> {
             override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
+
                 Log.d("badRequest", t.message.toString())
             }
 
@@ -127,7 +145,7 @@ class APIClient {
                 call: Call<List<ContactReadResponse>>,
                 response: Response<List<ContactReadResponse>>
             ) {
-                Log.d("goodRequest", response.code().toString())
+                    Log.d("goodRequest", response.code().toString())
             }
         })
     }

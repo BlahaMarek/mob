@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 class ContactAdapter(val contactList: ArrayList<ContactData>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
@@ -12,9 +14,10 @@ class ContactAdapter(val contactList: ArrayList<ContactData>) : RecyclerView.Ada
     override fun onBindViewHolder(holder: ContactAdapter.ViewHolder, position: Int) {
         val contact: ContactData = contactList[position]
         holder.textViewName.text = contact.userName
-
         holder.card.setOnClickListener{
             Log.d("xxx", "klikol si ${contact.userName}" )
+            val bundle = bundleOf("contactUid" to contact.userId)
+            holder.itemView.findNavController().navigate(R.id.action_contactList_to_chat, bundle)
         }
     }
 

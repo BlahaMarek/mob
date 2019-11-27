@@ -12,6 +12,7 @@ import kotlin.random.Random
 
 class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.MessageViewHolder>() {
     private val messages: ArrayList<Message> = ArrayList()
+    private lateinit var contactUid: String
     private val VIEW_TYPE_MY_MESSAGE = 1
     private val VIEW_TYPE_OTHER_MESSAGE = 2
 
@@ -20,18 +21,23 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         notifyDataSetChanged()
     }
 
+    fun setContactUid(uid: String)
+    {
+        contactUid = uid
+    }
+
     override fun getItemCount(): Int {
         return messages.size
     }
 
     override fun getItemViewType(position: Int): Int {
-        var type = Random.nextInt(1,3)
+        val messUid = messages[position].uid
 //        tu dorobit o akeho usra ide, zatial random sa priradi
-        return if(type == 1) {
-            VIEW_TYPE_MY_MESSAGE
+        return if(messUid == contactUid) {
+            VIEW_TYPE_OTHER_MESSAGE
         }
         else {
-            VIEW_TYPE_OTHER_MESSAGE
+            VIEW_TYPE_MY_MESSAGE
         }
     }
 
