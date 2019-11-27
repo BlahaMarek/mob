@@ -1,5 +1,6 @@
 package com.example.guysdestiny.wifi
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ class CustomAdapter(val wifiList: ArrayList<WifiData>) : RecyclerView.Adapter<Cu
         holder.textViewName.text = wifi.name
 
         holder.card.setOnClickListener{
+            holder.card.setBackgroundColor(Color.MAGENTA)
             Log.d("xxx", "klikol si ${wifi.name} s id ${wifi.id}" )
             val bundle = bundleOf("wifiName" to wifi.name)
             holder.itemView.findNavController().navigate(R.id.action_wifiList_to_postList, bundle)
