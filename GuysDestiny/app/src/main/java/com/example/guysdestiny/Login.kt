@@ -56,8 +56,8 @@ class Login : Fragment() {
         request.name = "testiceka"
         request.password = "heslo123"
 
-//        request.name = loginName.text.toString()
-//        request.password = passwd.text.toString()
+        request.name = loginName.text.toString()
+        request.password = passwd.text.toString()
 
         if (loginName.text.isBlank() || passwd.text.isBlank()) {
             Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()

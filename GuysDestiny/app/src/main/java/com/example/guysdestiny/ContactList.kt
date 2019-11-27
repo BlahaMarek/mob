@@ -8,12 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_contact_list.*
+import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +39,9 @@ class ContactList : Fragment() {
         contactRequest.uid = viewModelData.uid
         val contacts = ArrayList<ContactData>()
         getContactList(contactRequest, contacts)
+        btnWifiList.setOnClickListener {
+            view.findNavController().navigate(R.id.wifiList)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 

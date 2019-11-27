@@ -9,5 +9,15 @@
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
         android:layout_height="721dp" />
+    <Button
+        android:background="@drawable/basic_button"
+        android:id="@+id/btnWifiList"
+        android:text="Wifi"
+        android:textSize="14dp"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:layout_gravity="bottom" />
 
 </FrameLayout>

@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
 import com.example.guysdestiny.services.APIClient
@@ -57,7 +58,9 @@ class WifiList : Fragment() {
             val wifis = ArrayList<WifiData>()
             wifiMan(wifis)
         }
-
+        btnContactList.setOnClickListener {
+            view.findNavController().navigate(R.id.contactList)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 

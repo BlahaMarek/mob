@@ -53,11 +53,6 @@ class Chat : Fragment() {
         contactReadRequest.uid = viewModelData.uid
         getContactListMessages(contactReadRequest)
 
-        messageList?.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = messAdapter
-        }
-
         btnSend.setOnClickListener {
             val sdf = SimpleDateFormat("yyyy-dd-M hh:mm:ss")
             val currentDate = sdf.format(Date())
@@ -107,6 +102,10 @@ class Chat : Fragment() {
                 for(item in res)
                 {
                     messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
+                }
+                messageList?.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = messAdapter
                 }
             }
         })
