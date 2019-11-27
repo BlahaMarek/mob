@@ -18,7 +18,7 @@ import retrofit2.Response
 
 class APIClient {
     var BASE_URL = "http://zadanie.mpage.sk/"
-    var TOKEN = "b28fde817c5c7061ea369874739ee0c73cf37c86"
+    var TOKEN = "0a10b3cbe0ca07caf1b72315517720ecb2358a7a"
 
     fun loginUser(login: LoginRequest) {
 
@@ -69,24 +69,6 @@ class APIClient {
     fun fidUser(fid: UserFidRequest) {
 
         val call: okhttp3.Call = prepareRetrofit(false).userFid(fid)
-    }
-
-    fun getRoomList(request: WifiListRequest) {
-
-        val call: Call<List<WifiListResponse>> = prepareRetrofit(true).getWifiList(request)
-
-        call.enqueue(object : Callback<List<WifiListResponse>> {
-            override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
-                Log.d("badRequest", t.message.toString())
-            }
-
-            override fun onResponse(
-                call: Call<List<WifiListResponse>>,
-                response: Response<List<WifiListResponse>>
-            ) {
-                Log.d("goodRequest", response.code().toString())
-            }
-        })
     }
 
     fun getRoomListMessages(request: ReadRequest) {
