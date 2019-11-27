@@ -21,6 +21,7 @@ import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.room.WifiListRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
+import kotlinx.android.synthetic.main.fragment_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,6 +59,11 @@ class Login : Fragment() {
 //        request.name = loginName.text.toString()
 //        request.password = passwd.text.toString()
 
+        if (loginName.text.isBlank() || passwd.text.isBlank()) {
+            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val call: Call<LoginResponse> = apiClient.prepareRetrofit(false, "").userLogin(request)
 
         call.enqueue(object : Callback<LoginResponse> {
@@ -68,10 +74,14 @@ class Login : Fragment() {
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                Log.d("user logged", response.code().toString())
-                user = response.body()!!
-                viewModel.setUser(user)
-                view.findNavController().navigate(R.id.action_login_to_wifiList)
+                if ( response.body() != null) {
+                    user = response.body()!!
+                    viewModel.setUser(user)
+                    view.findNavController().navigate(R.id.action_login_to_wifiList)
+                } else {
+                    Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()
+                }
+
             }
         })
 
