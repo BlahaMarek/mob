@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.guysdestiny.R
@@ -30,7 +32,9 @@ class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
         }
 
         holder.postLayout.setOnClickListener {
-            Log.d("xxx", "klikol si $position")
+//            Log.d("xxx", "klikol si $position")
+            val bundle = bundleOf("contactUid" to "255")
+            holder.itemView.findNavController().navigate(R.id.action_postList_to_chat, bundle)
         }
     }
 

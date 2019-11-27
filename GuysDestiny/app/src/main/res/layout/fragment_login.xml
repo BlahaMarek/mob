@@ -48,11 +48,11 @@
             android:text="@string/log" />
 
         <Button
-            android:id="@+id/testBtn"
+            android:id="@+id/noRegBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="wifiny" />
+            android:text="bez registracie" />
 
         <TextView
             android:layout_width="wrap_content"
