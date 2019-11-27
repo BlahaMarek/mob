@@ -52,27 +52,15 @@
     </fragment>
     <fragment
         android:id="@+id/postList"
-        android:name="com.example.guysdestiny.PostList"
+        android:name="com.example.guysdestiny.posts.PostList"
         android:label="fragment_post_list"
         tools:layout="@layout/fragment_post_list" >
-        <action
-            android:id="@+id/action_postList_to_addPost"
-            app:destination="@id/addPost" />
         <action
             android:id="@+id/action_postList_to_wifiList"
             app:destination="@id/wifiList" />
         <action
             android:id="@+id/action_postList_to_chat"
             app:destination="@id/chat" />
-    </fragment>
-    <fragment
-        android:id="@+id/addPost"
-        android:name="com.example.guysdestiny.AddPost"
-        android:label="fragment_add_post"
-        tools:layout="@layout/fragment_add_post" >
-        <action
-            android:id="@+id/action_addPost_to_postList"
-            app:destination="@id/postList" />
     </fragment>
     <fragment
         android:id="@+id/chat"
