@@ -7,7 +7,7 @@ TODO
 •  Odoslanie notifikacie WiFi skupine (FCM nižšie), do ktorej sme poslali príspevok. Zachytenie a zobrazenie notifikácii u člena skupiny len v prípade, že je aktuálne pripojený na WiFi sieť skupiny. (Použiť FID, ako názov WiFi skupiny)
 
 OTAZKY
-•	posty – realtime ? chyba fid
+•	posty – realtime ? chyba fid - ano, treba real time
 
 TODO
 •	refresh wifi
