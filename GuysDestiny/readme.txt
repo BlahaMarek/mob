@@ -1,5 +1,6 @@
 TODO
-•  Odlhasenie pouzivatela
+•  pridanie dat do modelview
+•  Odhlasenie pouzivatela
 •  Obrazovka konverzacie
 	    umoznuje napisanie novej spravy obsahujucej len jeden gif pouzivatelovi kedykolvek na spodku obrazovky.
 •  Uložiť FID (Id pre firebase cloud messaging) na server pomocou webservisu user/fid.php
@@ -8,10 +9,3 @@ TODO
 
 OTAZKY
 •	posty – realtime ? chyba fid - ano, treba real time
-
-TODO
-•	refresh wifi
-•	pridanie dat do nodelview
-
-
-
