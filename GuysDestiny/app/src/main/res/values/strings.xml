@@ -11,4 +11,8 @@
     <string name="gotoSign"> Registráciu</string>
     <string name="gotoLogin"> Prihlásenie</string>
     <string name="wifi_fragment">Wifi Fragment</string>
+    <string name="logout">Logout</string>
+    <string name="refresh">Refresh</string>
+    <string name="kontakty">Kontakty</string>
+    <string name="wifi">Wifi</string>
 </resources>
