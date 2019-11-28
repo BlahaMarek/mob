@@ -12,6 +12,6 @@ OTAZKY
 TODO
 •	refresh wifi
 •	pridanie dat do nodelview
-•	refreshtoken ak vyprsi pocas pouzivania apky
+
 
 

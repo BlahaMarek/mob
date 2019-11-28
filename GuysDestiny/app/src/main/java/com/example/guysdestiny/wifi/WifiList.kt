@@ -11,15 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
-import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.apiModels.room.WifiListRequest
 import com.example.guysdestiny.services.apiModels.room.WifiListResponse
 import com.example.guysdestiny.UserViewModel
+import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
@@ -95,11 +94,10 @@ class WifiList : Fragment() {
     }
 
     fun getRoomList(wifis: ArrayList<WifiData>) {
-        val apiClient = APIClient()
         val request = WifiListRequest()
         request.uid = viewModelData.uid
 
-        val call: Call<List<WifiListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getWifiList(request)
+        val call: Call<List<WifiListResponse>> = APIService.create(activity!!.applicationContext).getWifiList(request)
         call.enqueue(object : Callback<List<WifiListResponse>> {
             override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
                 Log.d("badRequest", t.message.toString())

@@ -11,12 +11,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.guysdestiny.services.APIClient
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.contact.*
-import com.example.guysdestiny.services.apiModels.room.ReadRequest
-import com.example.guysdestiny.services.apiModels.room.ReadResponse
-import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_chat.*
 import okhttp3.ResponseBody
@@ -34,7 +30,6 @@ class Chat : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
 
-    val apiClient = APIClient()
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         viewModelData = viewModel.user.value!!
@@ -85,7 +80,7 @@ class Chat : Fragment() {
         val contactReadRequest = ContactReadRequest()
         contactReadRequest.contact = contactUid
         contactReadRequest.uid = viewModelData.uid
-        val call: Call<List<ContactReadResponse>> = apiClient.prepareRetrofit(true, viewModelData.access ).readContactListMessages(contactReadRequest)
+        val call: Call<List<ContactReadResponse>> = APIService.create(activity!!.applicationContext).readContactListMessages(contactReadRequest)
 
         call.enqueue(object : Callback<List<ContactReadResponse>> {
             override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
@@ -121,7 +116,7 @@ class Chat : Fragment() {
         contactMessageRequest.contact = contactUid
         contactMessageRequest.message = txtMessage.text.toString()
         contactMessageRequest.uid = viewModelData.uid
-        val call: Call<ResponseBody> = apiClient.prepareRetrofit(true, viewModelData.access).postMessageContactList(contactMessageRequest)
+        val call: Call<ResponseBody> = APIService.create(activity!!.applicationContext).postMessageContactList(contactMessageRequest)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

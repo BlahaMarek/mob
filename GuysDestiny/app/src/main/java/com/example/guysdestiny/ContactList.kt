@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.guysdestiny.services.APIClient
+import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_contact_list.*
-import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,7 +23,6 @@ import retrofit2.Response
  * A simple [Fragment] subclass.
  */
 class ContactList : Fragment() {
-    val apiClient = APIClient()
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
@@ -46,7 +44,7 @@ class ContactList : Fragment() {
     fun getContactList(contacts: ArrayList<ContactData>) {
         val contactRequest = ContactListRequest()
         contactRequest.uid = viewModelData.uid
-        val call: Call<List<ContactListResponse>> = apiClient.prepareRetrofit(true, viewModelData.access).getContactList(contactRequest)
+        val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
 
         call.enqueue(object : Callback<List<ContactListResponse>> {
             override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {

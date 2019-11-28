@@ -14,7 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import com.example.guysdestiny.services.APIClient
+import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import retrofit2.Call
@@ -29,7 +29,6 @@ class SignUp : Fragment() {
     lateinit var loginName: EditText
     lateinit var passwd: EditText
     lateinit var passwdConfirm: EditText
-    val apiClient = APIClient()
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle? ): View? {
         val view: View = inflater.inflate(R.layout.fragment_sign_up, container, false)
@@ -68,13 +67,11 @@ class SignUp : Fragment() {
             request.name = loginName.text.toString()
             request.password = passwd.text.toString()
 
-            val call: Call<LoginResponse> = apiClient.prepareRetrofit(false, "").userCreate(request)
+            val call: Call<LoginResponse> = APIService.create(context).userCreate(request)
 
             call.enqueue(object : Callback<LoginResponse> {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    Log.d("badRequest", t.message.toString())
                     Toast.makeText(context,"Registracia sa nepodarila", Toast.LENGTH_SHORT).show()
-
                 }
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
@@ -82,8 +79,6 @@ class SignUp : Fragment() {
                         viewModel.setUser(response.body()!!)
                         view.findNavController().navigate(R.id.action_signUp_to_wifiList)
                     } else {
-                        var l = response.code()
-                        print(l)
                         if (response.code().equals(500)) {
                             Toast.makeText(context,"Zadany login uz existuje", Toast.LENGTH_SHORT).show()
                         }

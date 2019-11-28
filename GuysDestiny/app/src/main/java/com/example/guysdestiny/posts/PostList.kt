@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.guysdestiny.R
 import com.example.guysdestiny.UserViewModel
-import com.example.guysdestiny.services.APIClient
+import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.wifi.CustomAdapter
@@ -46,7 +46,6 @@ class PostList : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     private lateinit var roomId: String
-    val apiClient = APIClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -106,8 +105,7 @@ class PostList : Fragment() {
         request.uid = viewModelData.uid
         request.room = roomId
 
-        val call: Call<List<ReadResponse>> =
-            apiClient.prepareRetrofit(true, viewModelData.access).readWifiListMessages(request)
+        val call: Call<List<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
         call.enqueue(object : Callback<List<ReadResponse>> {
             override fun onFailure(call: Call<List<ReadResponse>>, t: Throwable) {
                 Log.d("xx", t.message.toString())
@@ -175,8 +173,7 @@ class PostList : Fragment() {
 
     fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
 
-        val call: Call<ResponseBody> =
-            apiClient.prepareRetrofit(true, TOKEN).postMessageWifiList(request)
+        val call: Call<ResponseBody> =APIService.create(activity!!.applicationContext).postMessageWifiList(request)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
