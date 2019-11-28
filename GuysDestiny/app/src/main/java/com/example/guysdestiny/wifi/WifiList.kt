@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.regex.Pattern
 
 
 //ToDo:
@@ -42,6 +43,8 @@ class WifiList : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     val wifisNames = mutableSetOf<String>()
+    val regex = Regex("[^a-zA-Z0-9-_.~%]")
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
@@ -63,6 +66,10 @@ class WifiList : Fragment() {
         btnContactList.setOnClickListener {
             view.findNavController().navigate(R.id.contactList)
         }
+        refreshButton.setOnClickListener{
+            val wifis = ArrayList<WifiData>()
+            wifiMan(wifis)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -72,7 +79,9 @@ class WifiList : Fragment() {
 
         val wifiManager = activity!!.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if ( wifiManager.connectionInfo.ssid != null) {
-            val wifiSSID = wifiManager.connectionInfo.ssid.toString().replace("\"", "")
+            var wifiSSID = wifiManager.connectionInfo.ssid.toString().replace("\"", "")
+            wifiSSID = wifiSSID.replace(regex,"_")
+
             if (!wifisNames.contains(wifiSSID)) {
                 wifis.add(WifiData(wifiSSID, wifiSSID))
                 wifisNames.add(wifiSSID)
@@ -81,7 +90,9 @@ class WifiList : Fragment() {
 
             Log.d("ssid", wifiSSID)
         } else {
-            val wifiBSSID = wifiManager.connectionInfo.bssid.toString()
+            var wifiBSSID = wifiManager.connectionInfo.bssid.toString()
+            wifiBSSID = wifiBSSID.replace(regex,"_")
+
             if (!wifisNames.contains(wifiBSSID)) {
                 wifis.add(WifiData(wifiBSSID, wifiBSSID))
                 wifisNames.add(wifiBSSID)
@@ -108,8 +119,11 @@ class WifiList : Fragment() {
                     val res: List<WifiListResponse> = response.body()!!
 
                     for(item in res){
-                        if (!wifisNames.contains(item.roomid)) {
-                            wifis.add(WifiData(item.roomid, item.roomid))
+                        var ssid = item.roomid
+                        ssid = ssid.replace(regex,"_")
+
+                        if (!wifisNames.contains(ssid)) {
+                            wifis.add(WifiData(ssid, ssid))
                         }
                     }
                 }
