@@ -25,20 +25,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
-
-
-//ToDo:
-//      1. Vytvorit ReadMe File OK
-//      2. Ziskat SSID, BSSID  OK
-//      3. Povolenie pre polohu OK
-//      4. Vytvorit public room-ku  OK
-//      5. Cez rest ziskat zvysne room-ky OK
-//      6. Na onClickListener otvorit novy fragment + poslat data OK
-//      ...
-//      7. Obnovit wifimanagera pri zmene wifi
-//      8. Animacia na onClick
-
 class WifiList : Fragment() {
     private val MY_PERMISSIONS_REQUEST_LOCATION = 1
     private lateinit var viewModel: UserViewModel

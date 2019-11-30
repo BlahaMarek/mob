@@ -111,7 +111,6 @@ class Login : Fragment() {
 
             }
         })
-
     }
 
     private fun signFragment(view: View) {
@@ -147,7 +146,4 @@ class Login : Fragment() {
             }
         })
     }
-
-
-
 }
