@@ -8,15 +8,16 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
 
-class ContactAdapter(val contactList: ArrayList<ContactData>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
+class ContactAdapter(val contactList: ArrayList<ContactListResponse>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ContactAdapter.ViewHolder, position: Int) {
-        val contact: ContactData = contactList[position]
-        holder.textViewName.text = contact.userName
+        val contact: ContactListResponse = contactList[position]
+        holder.textViewName.text = contact.name
         holder.card.setOnClickListener{
-            Log.d("xxx", "klikol si ${contact.userName}" )
-            val bundle = bundleOf("contactUid" to contact.userId)
+            Log.d("xxx", "klikol si ${contact.name}" )
+            val bundle = bundleOf("contactUid" to contact.id)
             holder.itemView.findNavController().navigate(R.id.action_contactList_to_chat, bundle)
         }
     }

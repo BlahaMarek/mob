@@ -54,8 +54,18 @@ class WifiList : Fragment() {
         if (ContextCompat.checkSelfPermission( activity!!.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSIONS_REQUEST_LOCATION)
         } else {
-            val wifis = ArrayList<WifiListResponse>()
-            wifiMan(wifis)
+            var wifis = ArrayList<WifiListResponse>()
+
+            if (viewModel.roomList.value != null) {
+                wifis = ArrayList(viewModel.roomList.value!!)
+
+                recyclerView_wifiList?.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = CustomAdapter(wifis)
+                }
+            } else {
+                wifiMan(wifis)
+            }
         }
 
         btnContactList.setOnClickListener {
@@ -122,6 +132,7 @@ class WifiList : Fragment() {
                         }
                     }
                 }
+                viewModel.setRoomtList(wifis)
                 wifisNames.clear()
                 recyclerView_wifiList?.apply {
                     layoutManager = LinearLayoutManager(context)
@@ -136,8 +147,18 @@ class WifiList : Fragment() {
             MY_PERMISSIONS_REQUEST_LOCATION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d("perDone", "permission for Location")
-                    val wifis = ArrayList<WifiListResponse>()
-                    wifiMan(wifis)
+                    var wifis = ArrayList<WifiListResponse>()
+
+                    if (viewModel.roomList.value != null) {
+                        wifis = ArrayList(viewModel.roomList.value!!)
+
+                        recyclerView_wifiList?.apply {
+                            layoutManager = LinearLayoutManager(context)
+                            adapter = CustomAdapter(wifis)
+                        }
+                    } else {
+                        wifiMan(wifis)
+                    }
                 } else {
                     Log.d("eee", "no permission for Location")
                 }

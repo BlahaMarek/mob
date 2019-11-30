@@ -33,15 +33,26 @@ class ContactList : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val contacts = ArrayList<ContactData>()
-        getContactList(contacts)
+        var contacts = ArrayList<ContactListResponse>()
+
+        if (viewModel.contactList.value != null) {
+            contacts = ArrayList(viewModel.contactList.value!!)
+            rv_contact_list?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = ContactAdapter(contacts)
+            }
+        }
+        else {
+            getContactList(contacts)
+        }
+
         btnWifiList.setOnClickListener {
             view.findNavController().navigate(R.id.wifiList)
         }
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun getContactList(contacts: ArrayList<ContactData>) {
+    fun getContactList(contacts: ArrayList<ContactListResponse>) {
         val contactRequest = ContactListRequest()
         contactRequest.uid = viewModelData.uid
         val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
@@ -57,8 +68,9 @@ class ContactList : Fragment() {
             ) {
                 val res: List<ContactListResponse> = response.body()!!
                 for(item in res){
-                    contacts.add(ContactData(item.name, item.id))
+                    contacts.add(ContactListResponse(item.name, item.id))
                 }
+                viewModel.setContactList(contacts)
                 rv_contact_list?.apply {
                     layoutManager = LinearLayoutManager(context)
                     adapter = ContactAdapter(contacts)
