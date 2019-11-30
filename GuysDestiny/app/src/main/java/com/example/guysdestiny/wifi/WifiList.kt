@@ -24,7 +24,8 @@ import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.regex.Pattern
+
+
 
 
 //ToDo:
@@ -48,6 +49,16 @@ class WifiList : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
+
+        val userUid = activity!!.intent.extras!!.getString("userUid")!!
+        val userAccess = activity!!.intent.extras!!.getString("userAccess")!!
+        val userRefresh = activity!!.intent.extras!!.getString("userRefresh")!!
+
+        val logRes: LoginResponse = LoginResponse()
+        logRes.uid = userUid
+        logRes.access = userAccess
+        logRes.refresh = userRefresh
+        viewModel.setUser(logRes)
         viewModelData = viewModel.user.value!!
 
         return inflater.inflate(R.layout.fragment_wifi_list, container, false)

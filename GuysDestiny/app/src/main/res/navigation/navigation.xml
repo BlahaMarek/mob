@@ -3,32 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/login">
+    app:startDestination="@id/wifiList">
 
-    <fragment
-        android:id="@+id/login"
-        android:name="com.example.guysdestiny.Login"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_login_to_signUp"
-            app:destination="@id/signUp" />
-        <action
-            android:id="@+id/action_login_to_wifiList"
-            app:destination="@id/wifiList" />
-    </fragment>
-    <fragment
-        android:id="@+id/signUp"
-        android:name="com.example.guysdestiny.SignUp"
-        android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" >
-        <action
-            android:id="@+id/action_signUp_to_login"
-            app:destination="@id/login" />
-        <action
-            android:id="@+id/action_signUp_to_wifiList"
-            app:destination="@id/wifiList" />
-    </fragment>
     <fragment
         android:id="@+id/wifiList"
         android:name="com.example.guysdestiny.wifi.WifiList"
