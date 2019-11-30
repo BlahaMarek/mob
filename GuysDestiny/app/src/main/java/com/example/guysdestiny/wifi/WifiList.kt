@@ -54,9 +54,7 @@ class WifiList : Fragment() {
         if (ContextCompat.checkSelfPermission( activity!!.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSIONS_REQUEST_LOCATION)
         } else {
-            val wifis = ArrayList<WifiData>()
-
-
+            val wifis = ArrayList<WifiListResponse>()
             wifiMan(wifis)
         }
 
@@ -64,14 +62,14 @@ class WifiList : Fragment() {
             view.findNavController().navigate(R.id.contactList)
         }
         refreshButton.setOnClickListener{
-            val wifis = ArrayList<WifiData>()
+            val wifis = ArrayList<WifiListResponse>()
             wifiMan(wifis)
         }
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun wifiMan(wifis: ArrayList<WifiData>) {
-        wifis.add(WifiData("Public", "XsTDHS3C2YneVmEW5Ry7"))
+    fun wifiMan(wifis: ArrayList<WifiListResponse>) {
+        wifis.add(WifiListResponse("Public", "14:00:00"))
         wifisNames.add("Public")
 
         val wifiManager = activity!!.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -80,7 +78,7 @@ class WifiList : Fragment() {
             wifiSSID = wifiSSID.replace(regex,"_")
 
             if (!wifisNames.contains(wifiSSID)) {
-                wifis.add(WifiData(wifiSSID, wifiSSID))
+                wifis.add(WifiListResponse(wifiSSID, "14:00:00"))
                 wifisNames.add(wifiSSID)
                 viewModel.setCurrentWifi(wifiSSID)
             }
@@ -91,7 +89,7 @@ class WifiList : Fragment() {
             wifiBSSID = wifiBSSID.replace(regex,"_")
 
             if (!wifisNames.contains(wifiBSSID)) {
-                wifis.add(WifiData(wifiBSSID, wifiBSSID))
+                wifis.add(WifiListResponse(wifiBSSID, "14:00:00"))
                 wifisNames.add(wifiBSSID)
                 viewModel.setCurrentWifi(wifiBSSID)
             }
@@ -101,7 +99,7 @@ class WifiList : Fragment() {
         getRoomList(wifis)
     }
 
-    fun getRoomList(wifis: ArrayList<WifiData>) {
+    fun getRoomList(wifis: ArrayList<WifiListResponse>) {
         val request = WifiListRequest()
         request.uid = viewModelData.uid
 
@@ -120,7 +118,7 @@ class WifiList : Fragment() {
                         ssid = ssid.replace(regex,"_")
 
                         if (!wifisNames.contains(ssid)) {
-                            wifis.add(WifiData(ssid, ssid))
+                            wifis.add(WifiListResponse(ssid, "14:00:00"))
                         }
                     }
                 }
@@ -138,8 +136,7 @@ class WifiList : Fragment() {
             MY_PERMISSIONS_REQUEST_LOCATION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d("perDone", "permission for Location")
-                    val wifis = ArrayList<WifiData>()
-
+                    val wifis = ArrayList<WifiListResponse>()
                     wifiMan(wifis)
                 } else {
                     Log.d("eee", "no permission for Location")
