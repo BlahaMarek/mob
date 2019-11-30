@@ -1,6 +1,7 @@
 package com.example.guysdestiny
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -25,13 +26,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_logout -> {
-            preferences = this.getSharedPreferences("refresh", Context.MODE_PRIVATE)
+            preferences = this.getSharedPreferences("guysdestiny", Context.MODE_PRIVATE)
             preferences.edit().clear().apply()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
     }
-
 }

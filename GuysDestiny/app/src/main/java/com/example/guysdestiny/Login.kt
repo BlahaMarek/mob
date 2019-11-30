@@ -1,6 +1,7 @@
 package com.example.guysdestiny
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,18 +14,14 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
-import androidx.lifecycle.ViewModelProviders
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.content.SharedPreferences
-import androidx.navigation.Navigation
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
-import okhttp3.ResponseBody
-
 
 /**
  * A simple [Fragment] subclass.
@@ -35,7 +32,6 @@ class Login : Fragment() {
     var PREF_ACCESS = "access"
     var PREF_UID = "uid"
     lateinit var preferences: SharedPreferences
-    lateinit var viewModel: UserViewModel
     lateinit var loginName: EditText
     lateinit var passwd: EditText
 
@@ -50,7 +46,6 @@ class Login : Fragment() {
         loginBtn.setOnClickListener { loginUser(activity!!.applicationContext, view) }
         gotoSignUpButton.setOnClickListener { signFragment(view) }
 
-        viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         return view
     }
 
@@ -95,7 +90,6 @@ class Login : Fragment() {
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if ( response.body() != null) {
-                    viewModel.setUser(response.body()!!)
                     preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
                     preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
                     preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()
@@ -104,14 +98,19 @@ class Login : Fragment() {
                     inputManager.hideSoftInputFromWindow(
                         view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
                     )
-                    view.findNavController().navigate(R.id.action_login_to_wifiList)
+
+                    val intent = Intent(activity, MainActivity::class.java)
+                    intent.putExtra("userUid", response.body()!!.uid)
+                    intent.putExtra("userAccess", response.body()!!.access)
+                    intent.putExtra("userRefresh", response.body()!!.refresh)
+                    startActivity(intent)
+
                 } else {
                     Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()
                 }
 
             }
         })
-
     }
 
     private fun signFragment(view: View) {
@@ -131,18 +130,20 @@ class Login : Fragment() {
                 if ( response.body() != null) {
                     var user = LoginResponse()
                     user = response.body()!!
-                    viewModel.setUser(user)
                     preferences.edit().putString(PREF_REFRESH, user.refresh).apply()
                     preferences.edit().putString(PREF_UID, user.uid).apply()
                     preferences.edit().putString(PREF_ACCESS, user.access).apply()
-                    view.findNavController().navigate(R.id.action_login_to_wifiList)
+
+                    val intent = Intent(activity, MainActivity::class.java)
+                    intent.putExtra("userUid", user.uid)
+                    intent.putExtra("userAccess", user.access)
+                    intent.putExtra("userRefresh", user.refresh)
+                    startActivity(intent)
+
                 } else {
                     Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()
                 }
             }
         })
     }
-
-
-
 }

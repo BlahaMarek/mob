@@ -2,8 +2,8 @@ package com.example.guysdestiny
 
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
@@ -25,7 +24,6 @@ import retrofit2.Response
  * A simple [Fragment] subclass.
  */
 class SignUp : Fragment() {
-    lateinit var viewModel: UserViewModel
     lateinit var loginName: EditText
     lateinit var passwd: EditText
     lateinit var passwdConfirm: EditText
@@ -42,7 +40,6 @@ class SignUp : Fragment() {
         signBtn.setOnClickListener { createUser(activity!!.applicationContext, view) }
         gotoLoginButton.setOnClickListener { loginFragment(view) }
 
-        viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         return view
     }
 
@@ -76,8 +73,13 @@ class SignUp : Fragment() {
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if ( response.body() != null) {
-                        viewModel.setUser(response.body()!!)
-                        view.findNavController().navigate(R.id.action_signUp_to_wifiList)
+
+                        val intent = Intent(activity, MainActivity::class.java)
+                        intent.putExtra("userUid", response.body()!!.uid)
+                        intent.putExtra("userAccess", response.body()!!.access)
+                        intent.putExtra("userRefresh", response.body()!!.refresh)
+                        startActivity(intent)
+
                     } else {
                         if (response.code().equals(500)) {
                             Toast.makeText(context,"Zadany login uz existuje", Toast.LENGTH_SHORT).show()
