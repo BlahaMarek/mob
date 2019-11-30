@@ -2,7 +2,6 @@ package com.example.guysdestiny.posts
 
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,20 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.guysdestiny.R
 import com.example.guysdestiny.UserViewModel
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
-import com.example.guysdestiny.wifi.CustomAdapter
-import com.example.guysdestiny.wifi.WifiData
-import com.giphy.sdk.analytics.GiphyPingbacks
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.GPHSettings
 import com.giphy.sdk.ui.GiphyCoreUI
@@ -31,7 +24,6 @@ import com.giphy.sdk.ui.themes.GridType
 import com.giphy.sdk.ui.themes.LightTheme
 import com.giphy.sdk.ui.views.GiphyDialogFragment
 import kotlinx.android.synthetic.main.fragment_post_list.*
-import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import kotlinx.android.synthetic.main.new_post_field.*
 import okhttp3.ResponseBody
 import retrofit2.Call
