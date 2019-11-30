@@ -1,5 +1,5 @@
 TODO
-•  pridanie dat do modelview
+•  pridanie dat do modelview - kontakty aj roomky su, pridat posty a chat (po notifikaciach)
 
 •  Obrazovka konverzacie
 	    umoznuje napisanie novej spravy obsahujucej len jeden gif pouzivatelovi kedykolvek na spodku obrazovky.
