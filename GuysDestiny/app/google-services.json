@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "287798363960",
-    "firebase_url": "https://guysdestiny-77c17.firebaseio.com",
-    "project_id": "guysdestiny-77c17",
-    "storage_bucket": "guysdestiny-77c17.appspot.com"
+    "project_number": "836203471833",
+    "firebase_url": "https://guysdestinypushnotifications.firebaseio.com",
+    "project_id": "guysdestinypushnotifications",
+    "storage_bucket": "guysdestinypushnotifications.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:287798363960:android:86ef291fda5137613123cd",
+        "mobilesdk_app_id": "1:836203471833:android:e0b2cdc29fc54979c06fc8",
         "android_client_info": {
           "package_name": "com.example.guysdestiny"
         }
       },
       "oauth_client": [
         {
-          "client_id": "287798363960-e5m5gs0o5fjmh92mei160vd4kqk37006.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.guysdestiny",
-            "certificate_hash": "255fc68e102c9ef10d1dcbc01ce3833bc5270b94"
-          }
-        },
-        {
-          "client_id": "287798363960-816crcdcdjmjgjc46uv8irnqesrdl8fn.apps.googleusercontent.com",
+          "client_id": "836203471833-j992rc03cql4si6kamcdrrb7kfss3vto.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBqd5hZkO94PFRbb3eTHXqtvDnaHBsL-OY"
+          "current_key": "AIzaSyB9b6CcHMY_RPR7PofY3eIPYhKJnvhbnJ0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "287798363960-816crcdcdjmjgjc46uv8irnqesrdl8fn.apps.googleusercontent.com",
+              "client_id": "836203471833-j992rc03cql4si6kamcdrrb7kfss3vto.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

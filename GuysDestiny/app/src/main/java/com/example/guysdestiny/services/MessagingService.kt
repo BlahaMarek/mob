@@ -1,22 +1,32 @@
 package com.example.guysdestiny.services
 
-import android.nfc.Tag
+import android.app.NotificationManager
+import android.content.Context
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 class MessagingService : FirebaseMessagingService() {
-    override fun onMessageReceived(p0: RemoteMessage) {
-        if(p0?.data != null){
-            Log.d("Nika", p0.data.toString())
-        }
+    private lateinit var notificationManager: NotificationManager
+    val TAG = "ServiceFirebase"
 
-        if(p0?.notification != null){
-            Log.d("Nika", p0.notification.toString())
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        remoteMessage?.let { message ->
+            Log.i(TAG, "From: " + remoteMessage!!.from)
+            Log.i(TAG, "Notification Message Body: " + remoteMessage.notification!!.body)
+            Log.i(TAG, message.getData().get("message"))
+
+            notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
         }
     }
 
-    override fun onNewToken(p0: String) {
-        Log.d("Nika:", p0)
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d(TAG, token)
     }
+
 }
