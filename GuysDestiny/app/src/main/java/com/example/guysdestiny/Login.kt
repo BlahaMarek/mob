@@ -20,12 +20,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.content.SharedPreferences
+import androidx.activity.OnBackPressedCallback
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 
 /**
  * A simple [Fragment] subclass.
  */
+
+
 class Login : Fragment() {
     var PREF_NAME = "guysdestiny"
     var PREF_REFRESH = "refresh"
@@ -35,7 +38,11 @@ class Login : Fragment() {
     lateinit var loginName: EditText
     lateinit var passwd: EditText
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view: View = inflater.inflate(R.layout.fragment_login, container, false)
         val loginBtn: Button = view.findViewById(R.id.loginBtn)
         val gotoSignUpButton: TextView = view.findViewById(R.id.gotoSignBtn)
@@ -51,6 +58,17 @@ class Login : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val callback = object : OnBackPressedCallback(
+            true
+            /** true means that the callback is enabled */
+        ) {
+            override fun handleOnBackPressed() {
+                Toast.makeText(context, "Back button", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         preferences = this.activity!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -85,11 +103,15 @@ class Login : Fragment() {
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Toast.makeText(context,"Zadali ste chujovske prihlasovacie udaje", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Zadali ste chujovske prihlasovacie udaje",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if ( response.body() != null) {
+                if (response.body() != null) {
                     preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
                     preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
                     preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()
@@ -106,7 +128,11 @@ class Login : Fragment() {
                     startActivity(intent)
 
                 } else {
-                    Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Prihlasovacie udaje nie su spravne",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
             }
@@ -127,7 +153,7 @@ class Login : Fragment() {
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if ( response.body() != null) {
+                if (response.body() != null) {
                     var user = LoginResponse()
                     user = response.body()!!
                     preferences.edit().putString(PREF_REFRESH, user.refresh).apply()
@@ -141,7 +167,11 @@ class Login : Fragment() {
                     startActivity(intent)
 
                 } else {
-                    Toast.makeText(context,"Prihlasovacie udaje nie su spravne", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Prihlasovacie udaje nie su spravne",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         })
