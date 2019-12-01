@@ -100,6 +100,8 @@ class Chat : Fragment() {
                     messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
                 }
 
+                viewModel.setUserToWriteFID(res.get(0).uid_fid)
+
                 messageList?.apply {
                     layoutManager = LinearLayoutManager(context).apply {
                         stackFromEnd = true
@@ -128,9 +130,8 @@ class Chat : Fragment() {
                 Log.d("user refreshed", response.code().toString())
 
                 var req = UserFidRequest()
-
-                // TODO prerobit na FID usera s ktorym si pisem
-                req.fid = "flH1Q14WLzA:APA91bE_s4nsc6CblDN6kZbjZHX90IjZyu290K4Faw7xwzjDq2y1IxjW9bM0IZftFKM9pdcXxm2W63Qynx47gOfz-wPdTgF2KbWJ2NveK2ogNK8bqc7eI-Wtenwut_aNeEmdRihQi4ps"
+//                req.fid = viewModel.userToWriteFID.value!!
+                req.fid = "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg"
                 req.uid = viewModelData.uid
 
                 val notify: Call<ResponseBody> = APIService.create(activity!!.applicationContext).userFid(req)

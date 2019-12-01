@@ -68,7 +68,7 @@ class ContactList : Fragment() {
             ) {
                 val res: List<ContactListResponse> = response.body()!!
                 for(item in res){
-                    contacts.add(ContactListResponse(item.name, item.id))
+                    contacts.add(ContactListResponse(item.id, item.name))
                 }
                 viewModel.setContactList(contacts)
                 rv_contact_list?.apply {
