@@ -10,3 +10,4 @@ TODO
 
 OTAZKY
 •	posty – realtime ? chyba fid - ano, treba real time
+•	TokenAutenticator -> je tam execute metoda spravna ?
