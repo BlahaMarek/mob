@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
+import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import kotlinx.android.synthetic.main.fragment_chat.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -125,6 +126,23 @@ class Chat : Fragment() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("user refreshed", response.code().toString())
+
+                var req = UserFidRequest()
+
+                // TODO prerobit na FID usera s ktorym si pisem
+                req.fid = "flH1Q14WLzA:APA91bE_s4nsc6CblDN6kZbjZHX90IjZyu290K4Faw7xwzjDq2y1IxjW9bM0IZftFKM9pdcXxm2W63Qynx47gOfz-wPdTgF2KbWJ2NveK2ogNK8bqc7eI-Wtenwut_aNeEmdRihQi4ps"
+                req.uid = viewModelData.uid
+
+                val notify: Call<ResponseBody> = APIService.create(activity!!.applicationContext).userFid(req)
+
+                notify.enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.d("badRequest", t.message.toString())
+                    }
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        Log.d("notify send", response.code().toString())
+                    }
+                    })
             }
         })
 
