@@ -61,7 +61,7 @@ class WifiList : Fragment() {
 
                 recyclerView_wifiList?.apply {
                     layoutManager = LinearLayoutManager(context)
-                    adapter = CustomAdapter(wifis)
+                    adapter = CustomAdapter(wifis, activity!!.applicationContext)
                 }
             } else {
                 wifiMan(wifis)
@@ -136,7 +136,7 @@ class WifiList : Fragment() {
                 wifisNames.clear()
                 recyclerView_wifiList?.apply {
                     layoutManager = LinearLayoutManager(context)
-                    adapter = CustomAdapter(wifis)
+                    adapter = CustomAdapter(wifis, activity!!.applicationContext)
                 }
             }
         })
@@ -154,7 +154,7 @@ class WifiList : Fragment() {
 
                         recyclerView_wifiList?.apply {
                             layoutManager = LinearLayoutManager(context)
-                            adapter = CustomAdapter(wifis)
+                            adapter = CustomAdapter(wifis, activity!!.applicationContext)
                         }
                     } else {
                         wifiMan(wifis)

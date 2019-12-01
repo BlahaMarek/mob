@@ -1,11 +1,12 @@
 package com.example.guysdestiny.wifi
 
-import android.graphics.Color
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,7 @@ import com.example.guysdestiny.R
 import com.example.guysdestiny.services.apiModels.room.WifiListResponse
 
 
-class CustomAdapter(val wifiList: ArrayList<WifiListResponse>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(val wifiList: ArrayList<WifiListResponse>, val context: Context) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -21,7 +22,7 @@ class CustomAdapter(val wifiList: ArrayList<WifiListResponse>) : RecyclerView.Ad
         holder.textViewName.text = wifi.roomid
 
         holder.card.setOnClickListener{
-            holder.card.setBackgroundColor(Color.MAGENTA)
+            holder.card.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
             Log.d("xxx", "klikol si ${wifi.roomid}" )
 
             val bundle = bundleOf("wifiName" to wifi.roomid)
