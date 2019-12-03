@@ -34,7 +34,6 @@ import retrofit2.Response
  * A simple [Fragment] subclass.
  */
 class PostList : Fragment() {
-    var posts = ArrayList<PostModel>()
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     private lateinit var roomId: String
@@ -68,7 +67,7 @@ class PostList : Fragment() {
     fun fillPostListView() {
         recyclerView_posts?.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = CustomAdapterPosts(posts)
+            adapter = CustomAdapterPosts(viewModel.roomRead.value!!)
         }
     }
 
@@ -97,40 +96,28 @@ class PostList : Fragment() {
         request.uid = viewModelData.uid
         request.room = roomId
 
-        val call: Call<List<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
-        call.enqueue(object : Callback<List<ReadResponse>> {
-            override fun onFailure(call: Call<List<ReadResponse>>, t: Throwable) {
+        val call: Call<ArrayList<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
+        call.enqueue(object : Callback<ArrayList<ReadResponse>> {
+            override fun onFailure(call: Call<ArrayList<ReadResponse>>, t: Throwable) {
                 Log.d("xx", t.message.toString())
             }
 
             override fun onResponse(
-                call: Call<List<ReadResponse>>,
-                response: Response<List<ReadResponse>>
+                call: Call<ArrayList<ReadResponse>>,
+                response: Response<ArrayList<ReadResponse>>
             ) {
                 if (response.body() != null) {
-                    posts = ArrayList<PostModel>()
-                    val res: List<ReadResponse> = response.body()!!
-
-                    for (item in res) {
-                        posts.add(
-                            PostModel(
-                                item.uid,
-                                item.roomid,
-                                item.message,
-                                item.name,
-                                item.time
-                            )
-                        )
-                    }
-                    posts.reverse()
+                    val res: ArrayList<ReadResponse> = response.body()!!
+                    res.reverse()
+                    viewModel.setRoomtRead(res)
                     fillPostListView()
                 }
             }
         })
     }
 
-    fun addFakePost(newPost: PostModel) {
-        posts.add(0, newPost)
+    fun addFakePost(newPost: ReadResponse) {
+//        posts.add(0, newPost)
     }
 
     fun initGiphy() {
@@ -158,9 +145,9 @@ class PostList : Fragment() {
         messageReq.message = message
         messageReq.room = roomId
         messageReq.uid = viewModelData.uid
-        addFakePost(PostModel(viewModelData.uid, roomId, message, "Me", "Now"))
+//        Log.d("xx" ,message);
+//        addFakePost(ReadResponse(viewModelData.uid, roomId, message, "Me", "Now"))
         postRoomListMessages(messageReq, viewModelData.access)
-        fillPostListView()
     }
 
     fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
@@ -174,6 +161,7 @@ class PostList : Fragment() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("user refreshed", response.code().toString())
+                getRoomList()
             }
         })
     }

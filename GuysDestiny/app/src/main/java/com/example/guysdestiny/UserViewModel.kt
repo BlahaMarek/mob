@@ -15,7 +15,7 @@ class UserViewModel : ViewModel() {
     val contactList = MutableLiveData<List<ContactListResponse>>()
     val contactRead = MutableLiveData<List<ContactReadResponse>>()
     val roomList    = MutableLiveData<List<WifiListResponse>>()
-    val roomRead    = MutableLiveData<List<ReadResponse>>()
+    val roomRead    = MutableLiveData<ArrayList<ReadResponse>>()
 
     fun setUser(user: LoginResponse) {
         this.user.value = user
@@ -40,7 +40,7 @@ class UserViewModel : ViewModel() {
         this.roomList.value = list
     }
 
-    fun setRoomtRead(list: List<ReadResponse>) {
+    fun setRoomtRead(list: ArrayList<ReadResponse>) {
         this.roomRead.value = list
     }
 

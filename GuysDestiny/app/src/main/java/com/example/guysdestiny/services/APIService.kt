@@ -40,7 +40,7 @@ interface APIService {
 
     @POST("room/read.php")
     @Headers("ZadanieApiAuth: accept")
-    fun readWifiListMessages(@Body body: ReadRequest):Call<List<ReadResponse>>
+    fun readWifiListMessages(@Body body: ReadRequest):Call<ArrayList<ReadResponse>>
 
     @POST("room/message.php")
     @Headers("ZadanieApiAuth: accept")

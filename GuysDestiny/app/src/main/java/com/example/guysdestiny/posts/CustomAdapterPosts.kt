@@ -11,17 +11,18 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.guysdestiny.R
+import com.example.guysdestiny.services.apiModels.room.ReadResponse
 import com.giphy.sdk.analytics.GiphyPingbacks
 import com.giphy.sdk.analytics.GiphyPingbacks.context
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import java.util.regex.Pattern
 
 
-class CustomAdapterPosts(val posts: ArrayList<PostModel>) :
+class CustomAdapterPosts(val posts: ArrayList<ReadResponse>) :
     RecyclerView.Adapter<CustomAdapterPosts.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val post: PostModel = posts[position]
+        val post: ReadResponse = posts[position]
         holder.tvAuthor.text = post.name + ",  "
         holder.tvTime.text = post.time
         holder.tvText.text = post.message
