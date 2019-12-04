@@ -64,6 +64,16 @@ class MainActivity : AppCompatActivity() {
                 Log.d("direbaseToken", msg)
                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
             })
+
+        FirebaseMessaging.getInstance().subscribeToTopic("public")
+            .addOnCompleteListener { task ->
+                var msg = "Ide to ako kurva"
+                if (!task.isSuccessful) {
+                    msg = "Nejde to ako kurva"
+                }
+                Log.d(TAG, msg)
+                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

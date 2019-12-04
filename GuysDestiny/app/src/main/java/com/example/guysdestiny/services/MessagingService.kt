@@ -15,8 +15,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.guysdestiny.MainActivity
 import com.example.guysdestiny.R
+import com.example.guysdestiny.services.apiModels.NotificationBody
+import com.example.guysdestiny.services.apiModels.NotificationRequest
+import com.example.guysdestiny.services.apiModels.contact.ContactMessageRequest
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.android.synthetic.main.fragment_chat.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -77,14 +81,13 @@ class MessagingService : FirebaseMessagingService() {
         Log.d(TAG, token)
     }
 
-    fun sendNotification (token: String) {
+    fun sendNotification (token: String, topics: String) {
 
         val client = OkHttpClient.Builder().addInterceptor { chain ->
             val newRequest = chain.request().newBuilder()
-                .addHeader("Authorization", "key=AIzaSyAZNSawrn4sAKhm2waolIJLrIFbJtaALMA")
                 .addHeader("Content-Type", "application/json")
-                .build()
-            chain.proceed(newRequest)
+                .addHeader("Authorization", "key=AIzaSyAZNSawrn4sAKhm2waolIJLrIFbJtaALMA")
+            chain.proceed(newRequest.build())
         }.build()
 
         val retrofit = Retrofit.Builder()
@@ -93,17 +96,21 @@ class MessagingService : FirebaseMessagingService() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val notifObject = JSONObject()
-        notifObject.put("title", "WOW Notification")
-        notifObject.put("body", "This is a notification with only NOTIFICATION.")
-        notifObject.put("sound", "default")
+        var body = NotificationRequest()
+        var notif = NotificationBody()
 
+        notif.message = "Mňam do píči!!"
+        notif.title = "Fuj do píči!!"
 
-        val rootObject = JSONObject()
-        rootObject.put("to", "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg")
-        rootObject.put("notification", notifObject)
+        body.notification = notif
 
-        val call: Call<ResponseBody> = retrofit.create(APIService::class.java).sendNotification(rootObject)
+        if(topics.equals("id")) {
+            body.to = token
+        } else {
+            body.to = "/topics/$topics"
+        }
+
+        val call: Call<ResponseBody> = retrofit.create(APIService::class.java).sendNotification(body)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

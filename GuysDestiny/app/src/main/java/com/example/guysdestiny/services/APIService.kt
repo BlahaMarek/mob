@@ -1,6 +1,7 @@
 package com.example.guysdestiny.services
 
 import android.content.Context
+import com.example.guysdestiny.services.apiModels.NotificationRequest
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
@@ -61,7 +62,7 @@ interface APIService {
     fun postMessageContactList(@Body body: ContactMessageRequest): Call<ResponseBody>
 
     @POST("send")
-    fun sendNotification(@Body body: JSONObject): Call<ResponseBody>
+    fun sendNotification(@Body body: NotificationRequest): Call<ResponseBody>
 
     companion object {
 

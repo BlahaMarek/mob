@@ -141,7 +141,7 @@ class Chat : Fragment() {
                 Log.d("user refreshed", response.code().toString())
 
                 val service = MessagingService()
-                service.sendNotification(viewModel.userToWriteFID.value!!)
+                service.sendNotification(viewModel.userToWriteFID.value!!, "public")
             }
         })
     }
