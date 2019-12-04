@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -18,9 +19,8 @@ import kotlinx.android.synthetic.main.fragment_post_list.*
 import java.util.regex.Pattern
 
 
-class CustomAdapterPosts(val posts: ArrayList<ReadResponse>) :
+class CustomAdapterPosts(val posts: ArrayList<ReadResponse>, val userUid: String) :
     RecyclerView.Adapter<CustomAdapterPosts.ViewHolder>() {
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post: ReadResponse = posts[position]
         holder.tvAuthor.text = post.name + ",  "
@@ -28,8 +28,12 @@ class CustomAdapterPosts(val posts: ArrayList<ReadResponse>) :
         holder.tvText.text = post.message
 
         holder.tvAuthor.setOnClickListener {
-            val bundle = bundleOf("contactUid" to post.uid)
-            holder.itemView.findNavController().navigate(R.id.action_postList_to_chat, bundle)
+            if(!userUid.equals(post.uid)){
+                val bundle = bundleOf("contactUid" to post.uid)
+                holder.itemView.findNavController().navigate(R.id.action_postList_to_chat, bundle)
+            }else{
+                Toast.makeText(holder.thisC, "It is u! u cant write u!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

@@ -99,8 +99,10 @@ class Chat : Fragment() {
                 {
                     messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
                 }
+                if(res.count() > 0){
+                    setContactUid(res.get(0))
+                }
 
-                viewModel.setUserToWriteFID(res.get(0).uid_fid)
 
                 messageList?.apply {
                     layoutManager = LinearLayoutManager(context).apply {
@@ -112,6 +114,15 @@ class Chat : Fragment() {
 
             }
         })
+    }
+
+    fun setContactUid(message: ContactReadResponse){
+        if(viewModel.user.value!!.uid == message.uid){
+            viewModel.setUserToWriteFID(message.contact_fid)
+            return
+        }
+
+        viewModel.setUserToWriteFID(message.uid_fid)
     }
 
     fun postContactListMessages() {
@@ -131,19 +142,19 @@ class Chat : Fragment() {
 
                 var req = UserFidRequest()
 //                req.fid = viewModel.userToWriteFID.value!!
-                req.fid = "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg"
-                req.uid = viewModelData.uid
-
-                val notify: Call<ResponseBody> = APIService.create(activity!!.applicationContext).userFid(req)
-
-                notify.enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Log.d("badRequest", t.message.toString())
-                    }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        Log.d("notify send", response.code().toString())
-                    }
-                    })
+//                req.fid = "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg"
+//                req.uid = viewModelData.uid
+//
+//                val notify: Call<ResponseBody> = APIService.create(activity!!.applicationContext).userFid(req)
+//
+//                notify.enqueue(object : Callback<ResponseBody> {
+//                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//                        Log.d("badRequest", t.message.toString())
+//                    }
+//                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+//                        Log.d("notify send", response.code().toString())
+//                    }
+//                    })
             }
         })
 

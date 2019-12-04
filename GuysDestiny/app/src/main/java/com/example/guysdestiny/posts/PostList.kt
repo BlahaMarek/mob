@@ -67,7 +67,7 @@ class PostList : Fragment() {
     fun fillPostListView() {
         recyclerView_posts?.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = CustomAdapterPosts(viewModel.roomRead.value!!)
+            adapter = CustomAdapterPosts(viewModel.roomRead.value!!, viewModel.user.value!!.uid)
         }
     }
 
