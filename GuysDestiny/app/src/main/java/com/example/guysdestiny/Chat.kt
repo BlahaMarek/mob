@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.MessagingService
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -21,7 +22,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import com.google.firebase.messaging.FirebaseMessaging
 
 
 class Chat : Fragment() {
@@ -139,8 +139,10 @@ class Chat : Fragment() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("user refreshed", response.code().toString())
+
+                val service = MessagingService()
+                service.sendNotification(viewModel.userToWriteFID.value!!)
             }
         })
-
     }
 }

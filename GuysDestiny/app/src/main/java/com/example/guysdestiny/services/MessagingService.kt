@@ -17,6 +17,14 @@ import com.example.guysdestiny.MainActivity
 import com.example.guysdestiny.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class MessagingService : FirebaseMessagingService() {
@@ -64,11 +72,47 @@ class MessagingService : FirebaseMessagingService() {
         }
     }
 
-
-
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d(TAG, token)
     }
 
+    fun sendNotification (token: String) {
+
+        val client = OkHttpClient.Builder().addInterceptor { chain ->
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", "key=AIzaSyAZNSawrn4sAKhm2waolIJLrIFbJtaALMA")
+                .addHeader("Content-Type", "application/json")
+                .build()
+            chain.proceed(newRequest)
+        }.build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://fcm.googleapis.com/fcm/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val notifObject = JSONObject()
+        notifObject.put("title", "WOW Notification")
+        notifObject.put("body", "This is a notification with only NOTIFICATION.")
+        notifObject.put("sound", "default")
+
+
+        val rootObject = JSONObject()
+        rootObject.put("to", "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg")
+        rootObject.put("notification", notifObject)
+
+        val call: Call<ResponseBody> = retrofit.create(APIService::class.java).sendNotification(rootObject)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("reqNotFail", t.message.toString())
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("reqNotRes", response.toString())
+            }
+        })
+    }
 }

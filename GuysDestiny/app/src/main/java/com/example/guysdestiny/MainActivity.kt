@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                 })
 
 
+                Log.d("direbaseToken", msg)
                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
             })
     }
