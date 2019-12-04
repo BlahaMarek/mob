@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.localDatabase.ContactDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
@@ -37,7 +39,7 @@ class ContactList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var contacts = ArrayList<ContactListResponse>()
 
-        if (viewModel.contactList.value != null) {
+        if (!viewModel.contactList.value.isNullOrEmpty()) {
             contacts = ArrayList(viewModel.contactList.value!!)
             rv_contact_list?.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -55,6 +57,25 @@ class ContactList : Fragment() {
     }
 
     fun getContactList(contacts: ArrayList<ContactListResponse>) {
+        val dbHandler = ContactDatabaseService(activity!!.applicationContext)
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val contactsFromLocalDb = dbHandler.getContacts()
+            for(item in contactsFromLocalDb){
+                contacts.add(item)
+            }
+            viewModel.setContactList(contactsFromLocalDb)
+            rv_contact_list?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = ContactAdapter(contacts)
+            }
+            return
+        }
         val contactRequest = ContactListRequest()
         contactRequest.uid = viewModelData.uid
         val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
@@ -72,7 +93,6 @@ class ContactList : Fragment() {
 
                 if(res.count() > 0)
                 {
-                    val dbHandler = ContactDatabaseService(activity!!.applicationContext)
                     dbHandler.addContacts(res)
                 }
 

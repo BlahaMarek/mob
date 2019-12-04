@@ -114,6 +114,7 @@ class Login : Fragment() {
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.body() != null) {
+                    context.deleteDatabase("GuysDestinyDatabase")
                     preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
                     preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
                     preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()

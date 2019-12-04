@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -20,6 +21,7 @@ import com.example.guysdestiny.services.apiModels.room.WifiListResponse
 import com.example.guysdestiny.UserViewModel
 import com.example.guysdestiny.localDatabase.WifiDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
@@ -111,6 +113,31 @@ class WifiList : Fragment() {
     }
 
     fun getRoomList(wifis: ArrayList<WifiListResponse>) {
+        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val wifisFromLocalDb = dbHandler.getWifis()
+            for(item in wifisFromLocalDb){
+                var ssid = item.roomid
+                ssid = ssid.replace(regex,"_")
+
+                if (!wifisNames.contains(ssid)) {
+                    wifis.add(WifiListResponse(ssid, "14:00:00"))
+                }
+            }
+            viewModel.setRoomtList(wifis)
+            wifisNames.clear()
+            recyclerView_wifiList?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = CustomAdapter(wifis, activity!!.applicationContext)
+            }
+            return
+        }
         val request = WifiListRequest()
         request.uid = viewModelData.uid
 
@@ -125,9 +152,9 @@ class WifiList : Fragment() {
                     val res: List<WifiListResponse> = response.body()!!
                     if(res.count() > 0)
                     {
-                        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
                         dbHandler.addWifis(res)
                     }
+                    val wifisFromLocalDb = dbHandler.getWifis()
                     for(item in res){
                         var ssid = item.roomid
                         ssid = ssid.replace(regex,"_")

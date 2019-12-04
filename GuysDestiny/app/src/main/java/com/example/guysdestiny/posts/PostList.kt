@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
 import com.example.guysdestiny.UserViewModel
+import com.example.guysdestiny.localDatabase.PostDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.giphy.sdk.core.models.Media
@@ -91,6 +93,19 @@ class PostList : Fragment() {
     }
 
     fun getRoomList() {
+        val dbHandler = PostDatabaseService(activity!!.applicationContext)
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val postsFromLocalDb = dbHandler.getPosts(roomId)
+            viewModel.setRoomtRead(postsFromLocalDb)
+            fillPostListView()
+            return
+        }
 
         val request = ReadRequest()
         request.uid = viewModelData.uid
@@ -109,6 +124,7 @@ class PostList : Fragment() {
                 if (response.body() != null) {
                     val res: ArrayList<ReadResponse> = response.body()!!
                     res.reverse()
+                    dbHandler.addPosts(res)
                     viewModel.setRoomtRead(res)
                     fillPostListView()
                 }

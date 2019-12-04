@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             preferences.edit().clear().apply()
 
             val intent = Intent(this, LoginActivity::class.java)
+            baseContext.deleteDatabase("GuysDestinyDatabase")
             startActivity(intent)
             true
         }
