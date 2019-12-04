@@ -1,6 +1,7 @@
 package com.example.guysdestiny
 
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.guysdestiny.localDatabase.ContactDatabaseService
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
@@ -67,6 +69,13 @@ class ContactList : Fragment() {
                 response: Response<List<ContactListResponse>>
             ) {
                 val res: List<ContactListResponse> = response.body()!!
+
+                if(res.count() > 0)
+                {
+                    val dbHandler = ContactDatabaseService(activity!!.applicationContext)
+                    dbHandler.addContacts(res)
+                }
+
                 for(item in res){
                     contacts.add(ContactListResponse(item.id, item.name))
                 }

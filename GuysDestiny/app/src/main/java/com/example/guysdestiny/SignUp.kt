@@ -13,6 +13,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
+import com.example.guysdestiny.localDatabase.UserDatabaseService
+import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
@@ -73,6 +75,18 @@ class SignUp : Fragment() {
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if ( response.body() != null) {
+
+                        //ulozenie usera do SQLite
+                        val dbHandler = UserDatabaseService(context)
+                        val userToSave = User()
+                        userToSave.uid = response.body()!!.uid
+                        userToSave.access = response.body()!!.access
+                        userToSave.refresh = response.body()!!.refresh
+                        val dbResult = dbHandler.addUser(userToSave)
+                        if(dbResult.toInt() == -1)
+                        {
+                            dbHandler.updateUser(userToSave)
+                        }
 
                         val intent = Intent(activity, MainActivity::class.java)
                         intent.putExtra("userUid", response.body()!!.uid)

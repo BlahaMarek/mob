@@ -4,8 +4,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.receiver_chat_item_layout.view.*
 import kotlinx.android.synthetic.main.sender_chat_item_layout.view.*
 import kotlin.random.Random
@@ -36,7 +38,6 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
 
     override fun getItemViewType(position: Int): Int {
         val messUid = messages[position].uid
-//        tu dorobit o akeho usra ide, zatial random sa priradi
         return if(messUid == contactUid) {
             VIEW_TYPE_OTHER_MESSAGE
         }
@@ -47,7 +48,6 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = messages.get(position)
-
         holder.bind(message)
     }
 
@@ -68,6 +68,7 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         private var timeText: TextView = view.txtSenderMessageTime
 
         override fun bind(message: Message) {
+
             messageText.text = message.message
             timeText.text = message.time
         }

@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.navigation.findNavController
 import com.example.guysdestiny.R
+import com.example.guysdestiny.localDatabase.UserDatabaseService
+import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 import okhttp3.Authenticator
@@ -38,6 +40,13 @@ class TokenAuthentificator(val context: Context) : Authenticator {
                 userAccessToken=call.body()!!.access
                 preferences.edit().putString("refresh", call.body()!!.refresh).apply()
                 preferences.edit().putString("access",  call.body()!!.access).apply()
+                // updte usera v SQLite databaze
+                val dbHandler = UserDatabaseService(context)
+                val userToUpdate = User()
+                userToUpdate.uid = refreshReq.uid
+                userToUpdate.access = call.body()!!.access
+                userToUpdate.refresh = call.body()!!.refresh
+                val dbResult = dbHandler.updateUser(userToUpdate)
 
                 return response.request().newBuilder()
                     .header("Authorization","Bearer $userAccessToken")

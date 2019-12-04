@@ -18,6 +18,7 @@ import com.example.guysdestiny.R
 import com.example.guysdestiny.services.apiModels.room.WifiListRequest
 import com.example.guysdestiny.services.apiModels.room.WifiListResponse
 import com.example.guysdestiny.UserViewModel
+import com.example.guysdestiny.localDatabase.WifiDatabaseService
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
@@ -122,7 +123,11 @@ class WifiList : Fragment() {
             override fun onResponse(call: Call<List<WifiListResponse>>, response: Response<List<WifiListResponse>>) {
                 if ( response.body() != null) {
                     val res: List<WifiListResponse> = response.body()!!
-
+                    if(res.count() > 0)
+                    {
+                        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
+                        dbHandler.addWifis(res)
+                    }
                     for(item in res){
                         var ssid = item.roomid
                         ssid = ssid.replace(regex,"_")

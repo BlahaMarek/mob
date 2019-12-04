@@ -21,6 +21,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.SharedPreferences
 import androidx.activity.OnBackPressedCallback
+import com.example.guysdestiny.localDatabase.UserDatabaseService
+import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 
@@ -120,6 +122,18 @@ class Login : Fragment() {
                     inputManager.hideSoftInputFromWindow(
                         view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
                     )
+
+                    // ulozenie usera do SQLite
+                    val dbHandler = UserDatabaseService(context)
+                    val userToSave = User()
+                    userToSave.uid = response.body()!!.uid
+                    userToSave.access = response.body()!!.access
+                    userToSave.refresh = response.body()!!.refresh
+                    val dbResult = dbHandler.addUser(userToSave)
+                    if(dbResult.toInt() == -1)
+                    {
+                        dbHandler.updateUser(userToSave)
+                    }
 
                     val intent = Intent(activity, MainActivity::class.java)
                     intent.putExtra("userUid", response.body()!!.uid)
