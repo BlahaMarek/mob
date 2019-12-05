@@ -12,7 +12,7 @@
 
     <ImageView
         android:id="@+id/wifiImage"
-        android:src="@drawable/ic_child_care_black_24dp"
+        android:src="@drawable/gph_ic_search_pink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"

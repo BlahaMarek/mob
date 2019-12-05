@@ -12,9 +12,10 @@
     <Button
         android:background="@drawable/basic_button"
         android:id="@+id/btnWifiList"
-        android:text="Wifi"
+        android:text="Back to Wifi"
         android:textSize="14dp"
         android:clickable="true"
+        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:gravity="center"
