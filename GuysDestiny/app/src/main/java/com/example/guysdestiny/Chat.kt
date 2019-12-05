@@ -15,6 +15,12 @@ import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.example.guysdestiny.services.apiModels.user.UserFidRequest
+import com.giphy.sdk.core.models.Media
+import com.giphy.sdk.ui.GPHSettings
+import com.giphy.sdk.ui.GiphyCoreUI
+import com.giphy.sdk.ui.themes.GridType
+import com.giphy.sdk.ui.themes.LightTheme
+import com.giphy.sdk.ui.views.GiphyDialogFragment
 import kotlinx.android.synthetic.main.fragment_chat.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -46,23 +52,32 @@ class Chat : Fragment() {
         getContactListMessages()
 
         btnSend.setOnClickListener {
-            val sdf = SimpleDateFormat("yyyy-dd-M hh:mm:ss")
-            val currentDate = sdf.format(Date())
+
             if(txtMessage.text.isNotEmpty()) {
-                val message = Message(
-                    "ja",
-                    txtMessage.text.toString(),
-                    currentDate,
-                    viewModelData.uid
-                )
-                postContactListMessages()
-                messAdapter.addMessage(message)
-                resetInput()
-                messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
+                sendMessage(txtMessage.text.toString())
             }
         }
 
+        bt_addGif_chat.setOnClickListener{
+            initGiphy()
+        }
+
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun sendMessage(text: String){
+        val sdf = SimpleDateFormat("yyyy-dd-M hh:mm:ss")
+        val currentDate = sdf.format(Date())
+        val message = Message(
+            "ja",
+            text,
+            currentDate,
+            viewModelData.uid
+        )
+        postContactListMessages(text)
+        messAdapter.addMessage(message)
+        resetInput()
+        messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
     }
 
      fun resetInput() {
@@ -117,6 +132,7 @@ class Chat : Fragment() {
     }
 
     fun setContactUid(message: ContactReadResponse){
+        return
         if(viewModel.user.value!!.uid == message.uid){
             viewModel.setUserToWriteFID(message.contact_fid)
             return
@@ -125,10 +141,10 @@ class Chat : Fragment() {
         viewModel.setUserToWriteFID(message.uid_fid)
     }
 
-    fun postContactListMessages() {
+    fun postContactListMessages(message: String) {
         val contactMessageRequest = ContactMessageRequest()
         contactMessageRequest.contact = contactUid
-        contactMessageRequest.message = txtMessage.text.toString()
+        contactMessageRequest.message = message
         contactMessageRequest.uid = viewModelData.uid
         val call: Call<ResponseBody> = APIService.create(activity!!.applicationContext).postMessageContactList(contactMessageRequest)
 
@@ -159,4 +175,25 @@ class Chat : Fragment() {
         })
 
     }
+
+    fun initGiphy() {
+        var giphUrl: String
+        context?.let { GiphyCoreUI.configure(it, "SG4rKVNYS5I9ISSQyOww9Mro0JdhK4KZ") }
+
+        var settings =
+            GPHSettings(gridType = GridType.waterfall, theme = LightTheme, dimBackground = true)
+        val gifsDialog = GiphyDialogFragment.newInstance(settings)
+
+        gifsDialog.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener {
+            override fun onGifSelected(media: Media) {
+                giphUrl = "gif:" + media.id
+                sendMessage(giphUrl)
+            }
+
+            override fun onDismissed() {}
+        }
+
+        gifsDialog.show(activity!!.supportFragmentManager, "shit")
+    }
+
 }

@@ -18,6 +18,7 @@
             android:id="@+id/et_newMessage"
             android:layout_width="0dp"
             android:layout_weight="5"
+            android:layout_margin="6dip"
             android:layout_height="wrap_content"
             android:hint="Enter message"
             android:background="@drawable/basic_edit_text"
