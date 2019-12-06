@@ -58,6 +58,7 @@ class ContactList : Fragment() {
 
     fun getContactList(contacts: ArrayList<ContactListResponse>) {
         val dbHandler = ContactDatabaseService(activity!!.applicationContext)
+        // ak nie je pouzivatel pripojeny na internet nemozme volat API zo servera, ale udaje ziskame iba z lokalnej DB
         if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
         {
             Toast.makeText(
@@ -74,37 +75,49 @@ class ContactList : Fragment() {
                 layoutManager = LinearLayoutManager(context)
                 adapter = ContactAdapter(contacts)
             }
-            return
+        }else{
+            val contactRequest = ContactListRequest()
+            contactRequest.uid = viewModelData.uid
+            // pokial nepride response zo servera, zobrazujeme data ulozenie v lokalnej DB
+            val contactsFromLocalDb = dbHandler.getContacts()
+            for(item in contactsFromLocalDb){
+                contacts.add(item)
+            }
+            viewModel.setContactList(contactsFromLocalDb)
+            rv_contact_list?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = ContactAdapter(contacts)
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+            val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
+
+            call.enqueue(object : Callback<List<ContactListResponse>> {
+                override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
+                    Log.d("badRequest", t.message.toString())
+                }
+
+                override fun onResponse(
+                    call: Call<List<ContactListResponse>>,
+                    response: Response<List<ContactListResponse>>
+                ) {
+                    val res: List<ContactListResponse> = response.body()!!
+
+                    if(res.count() > 0)
+                    {
+                        dbHandler.addContacts(res)
+                    }
+
+                    for(item in res){
+                        contacts.add(ContactListResponse(item.id, item.name))
+                    }
+                    viewModel.setContactList(contacts)
+                    rv_contact_list?.apply {
+                        layoutManager = LinearLayoutManager(context)
+                        adapter = ContactAdapter(contacts)
+                    }
+                }
+            })
         }
-        val contactRequest = ContactListRequest()
-        contactRequest.uid = viewModelData.uid
-        val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
 
-        call.enqueue(object : Callback<List<ContactListResponse>> {
-            override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
-                Log.d("badRequest", t.message.toString())
-            }
-
-            override fun onResponse(
-                call: Call<List<ContactListResponse>>,
-                response: Response<List<ContactListResponse>>
-            ) {
-                val res: List<ContactListResponse> = response.body()!!
-
-                if(res.count() > 0)
-                {
-                    dbHandler.addContacts(res)
-                }
-
-                for(item in res){
-                    contacts.add(ContactListResponse(item.id, item.name))
-                }
-                viewModel.setContactList(contacts)
-                rv_contact_list?.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = ContactAdapter(contacts)
-                }
-            }
-        })
     }
 }

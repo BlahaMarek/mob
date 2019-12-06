@@ -94,6 +94,7 @@ class PostList : Fragment() {
 
     fun getRoomList() {
         val dbHandler = PostDatabaseService(activity!!.applicationContext)
+        //Ak pouzivatel nema pristup na internet zobrazujeme udaje z lokalnej DB a nevolame API yo servera
         if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
         {
             Toast.makeText(
@@ -104,32 +105,35 @@ class PostList : Fragment() {
             val postsFromLocalDb = dbHandler.getPosts(roomId)
             viewModel.setRoomtRead(postsFromLocalDb)
             fillPostListView()
-            return
-        }
-
-        val request = ReadRequest()
-        request.uid = viewModelData.uid
-        request.room = roomId
-
-        val call: Call<ArrayList<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
-        call.enqueue(object : Callback<ArrayList<ReadResponse>> {
-            override fun onFailure(call: Call<ArrayList<ReadResponse>>, t: Throwable) {
-                Log.d("xx", t.message.toString())
-            }
-
-            override fun onResponse(
-                call: Call<ArrayList<ReadResponse>>,
-                response: Response<ArrayList<ReadResponse>>
-            ) {
-                if (response.body() != null) {
-                    val res: ArrayList<ReadResponse> = response.body()!!
-                    res.reverse()
-                    dbHandler.addPosts(res)
-                    viewModel.setRoomtRead(res)
-                    fillPostListView()
+        }else{
+            val request = ReadRequest()
+            request.uid = viewModelData.uid
+            request.room = roomId
+            // pokial nepridu udaje zo servera, zobrazujeme data y lokalnej DB
+            val postsFromLocalDb = dbHandler.getPosts(roomId)
+            viewModel.setRoomtRead(postsFromLocalDb)
+            fillPostListView()
+            //////////////////////////////////////////////////////////////////////////////////////
+            val call: Call<ArrayList<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
+            call.enqueue(object : Callback<ArrayList<ReadResponse>> {
+                override fun onFailure(call: Call<ArrayList<ReadResponse>>, t: Throwable) {
+                    Log.d("xx", t.message.toString())
                 }
-            }
-        })
+
+                override fun onResponse(
+                    call: Call<ArrayList<ReadResponse>>,
+                    response: Response<ArrayList<ReadResponse>>
+                ) {
+                    if (response.body() != null) {
+                        val res: ArrayList<ReadResponse> = response.body()!!
+                        res.reverse()
+                        dbHandler.addPosts(res)
+                        viewModel.setRoomtRead(res)
+                        fillPostListView()
+                    }
+                }
+            })
+        }
     }
 
     fun addFakePost(newPost: ReadResponse) {
