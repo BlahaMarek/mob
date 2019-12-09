@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback
 import com.example.guysdestiny.localDatabase.UserDatabaseService
 import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 
 /**
@@ -101,60 +102,69 @@ class Login : Fragment() {
 //            return
 //        }
 
-        val call: Call<LoginResponse> = APIService.create(context).userLogin(request)
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Nie ste pripojeny k internetu",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else{
+            val call: Call<LoginResponse> = APIService.create(context).userLogin(request)
 
-        call.enqueue(object : Callback<LoginResponse> {
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Toast.makeText(
-                    context,
-                    "Zadali ste chujovske prihlasovacie udaje",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.body() != null) {
-                    context.deleteDatabase("GuysDestinyDatabase")
-                    preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
-                    preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
-                    preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()
-                    val inputManager =
-                        activity!!.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputManager.hideSoftInputFromWindow(
-                        view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
-                    )
-
-                    // ulozenie usera do SQLite
-                    val dbHandler = UserDatabaseService(context)
-                    val userToSave = User()
-                    userToSave.uid = response.body()!!.uid
-                    userToSave.access = response.body()!!.access
-                    userToSave.refresh = response.body()!!.refresh
-                    val dbResult = dbHandler.addUser(userToSave)
-                    if(dbResult.toInt() == -1)
-                    {
-                        dbHandler.updateUser(userToSave)
-                    }
-
-                    val intent = Intent(activity, MainActivity::class.java)
-                    intent.putExtra("userUid", response.body()!!.uid)
-                    intent.putExtra("userAccess", response.body()!!.access)
-                    intent.putExtra("userRefresh", response.body()!!.refresh)
-                    startActivity(intent)
-                    activity!!.finish()
-
-
-
-                } else {
+            call.enqueue(object : Callback<LoginResponse> {
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Toast.makeText(
                         context,
-                        "Prihlasovacie udaje nie su spravne",
+                        "Zadali ste zle prihlasovacie udaje",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
-            }
-        })
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    if (response.body() != null) {
+                        context.deleteDatabase("GuysDestinyDatabase")
+                        preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
+                        preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
+                        preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()
+                        val inputManager =
+                            activity!!.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        inputManager.hideSoftInputFromWindow(
+                            view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
+                        )
+
+                        // ulozenie usera do SQLite
+                        val dbHandler = UserDatabaseService(context)
+                        val userToSave = User()
+                        userToSave.uid = response.body()!!.uid
+                        userToSave.access = response.body()!!.access
+                        userToSave.refresh = response.body()!!.refresh
+                        val dbResult = dbHandler.addUser(userToSave)
+                        if(dbResult.toInt() == -1)
+                        {
+                            dbHandler.updateUser(userToSave)
+                        }
+
+                        val intent = Intent(activity, MainActivity::class.java)
+                        intent.putExtra("userUid", response.body()!!.uid)
+                        intent.putExtra("userAccess", response.body()!!.access)
+                        intent.putExtra("userRefresh", response.body()!!.refresh)
+                        startActivity(intent)
+                        activity!!.finish()
+
+
+
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Prihlasovacie udaje nie su spravne",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                }
+            })
+        }
     }
 
     private fun signFragment(view: View) {
