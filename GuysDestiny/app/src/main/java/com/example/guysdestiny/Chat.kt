@@ -58,8 +58,7 @@ class Chat : Fragment() {
                     currentDate,
                     viewModelData.uid
                 )
-                postContactListMessages()
-                messAdapter.addMessage(message)
+                postContactListMessages(message)
                 resetInput()
                 messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
             }
@@ -171,7 +170,7 @@ class Chat : Fragment() {
         viewModel.setUserToWriteFID(message.uid_fid)
     }
 
-    fun postContactListMessages() {
+    fun postContactListMessages(message: Message) {
         val contactMessageRequest = ContactMessageRequest()
         contactMessageRequest.contact = contactUid
         contactMessageRequest.message = txtMessage.text.toString()
@@ -184,7 +183,7 @@ class Chat : Fragment() {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.d("user refreshed", response.code().toString())
+                messAdapter.addMessage(message)
                 getContactListMessages()
                 val service = MessagingService()
                 service.sendNotification(viewModel.userToWriteFID.value!!, "public")

@@ -53,6 +53,9 @@ class ContactList : Fragment() {
         btnWifiList.setOnClickListener {
             view.findNavController().navigate(R.id.wifiList)
         }
+        refresh.setOnClickListener{
+            getContactList(contacts)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -68,7 +71,10 @@ class ContactList : Fragment() {
             ).show()
             val contactsFromLocalDb = dbHandler.getContacts()
             for(item in contactsFromLocalDb){
-                contacts.add(item)
+                if(contacts.any { a-> a.id == item.id })
+                {
+                    contacts.add(item)
+                }
             }
             viewModel.setContactList(contactsFromLocalDb)
             rv_contact_list?.apply {
@@ -81,7 +87,10 @@ class ContactList : Fragment() {
             // pokial nepride response zo servera, zobrazujeme data ulozenie v lokalnej DB
             val contactsFromLocalDb = dbHandler.getContacts()
             for(item in contactsFromLocalDb){
-                contacts.add(item)
+                if(contacts.any { a-> a.id == item.id })
+                {
+                    contacts.add(item)
+                }
             }
             viewModel.setContactList(contactsFromLocalDb)
             rv_contact_list?.apply {
@@ -108,7 +117,10 @@ class ContactList : Fragment() {
                     }
 
                     for(item in res){
-                        contacts.add(ContactListResponse(item.id, item.name))
+                        if(contacts.any { a-> a.id == item.id })
+                        {
+                            contacts.add(ContactListResponse(item.id, item.name))
+                        }
                     }
                     viewModel.setContactList(contacts)
                     rv_contact_list?.apply {

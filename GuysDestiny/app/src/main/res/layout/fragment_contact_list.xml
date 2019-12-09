@@ -4,20 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ContactList">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
 
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:background="@drawable/basic_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="@string/refresh"
+            android:textSize="14dp" />
+
+        <Button
+            android:background="@drawable/basic_button"
+            android:id="@+id/btnWifiList"
+            android:text="@string/kontakty"
+            android:textSize="14dp"
+            android:clickable="true"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:gravity="center"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
-        android:layout_height="721dp" />
-    <Button
-        android:background="@drawable/basic_button"
-        android:id="@+id/btnWifiList"
-        android:text="Wifi"
-        android:textSize="14dp"
-        android:clickable="true"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:gravity="center"
-        android:layout_gravity="bottom" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>
