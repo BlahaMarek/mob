@@ -14,14 +14,24 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.guysdestiny.Chat
 import com.example.guysdestiny.MainActivity
 import com.example.guysdestiny.R
+import com.example.guysdestiny.localDatabase.PostDatabaseService
+import com.example.guysdestiny.posts.CustomAdapterPosts
+import com.example.guysdestiny.posts.PostList
 import com.example.guysdestiny.services.apiModels.NotificationBody
 import com.example.guysdestiny.services.apiModels.NotificationRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactMessageRequest
+import com.example.guysdestiny.services.apiModels.room.ReadRequest
+import com.example.guysdestiny.services.apiModels.room.ReadResponse
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.android.synthetic.main.fragment_chat.*
+import kotlinx.android.synthetic.main.fragment_post_list.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -50,11 +60,19 @@ class MessagingService : FirebaseMessagingService() {
             preferences =
                 getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             if (remoteMessage.notification!!.title.equals(
-                    preferences.getString( "login","")!!) || preferences.getString("uid", "").equals("")
+                    preferences.getString("login", "")!!
+                ) || preferences.getString("uid", "").equals("")
             ) {
                 return
             }
+            // POSTY
+            if (remoteMessage.notification!!.body.equals("")) {
+                PostList().getRoomList()
+            } else {
+                Chat().getContactListMessages()
+            }
 
+            // NOTIFIKACIA
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = ADMIN_CHANNEL_ID
                 val descriptionText = "GuysDestiny"
@@ -110,13 +128,14 @@ class MessagingService : FirebaseMessagingService() {
         var body = NotificationRequest()
         var notif = NotificationBody()
 
-        notif.message = message
+        notif.body = ""
         notif.title = from
 
         body.notification = notif
 
         if (topics.equals("id")) {
             body.to = token
+            body.notification.body = message
         } else {
             body.to = "/topics/$topics"
         }

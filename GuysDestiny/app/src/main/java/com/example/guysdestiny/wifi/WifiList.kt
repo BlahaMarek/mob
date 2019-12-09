@@ -64,7 +64,7 @@ class WifiList : Fragment() {
                 wifis = ArrayList(viewModel.roomList.value!!)
 
                 recyclerView_wifiList?.apply {
-                    layoutManager = LinearLayoutManager(context)
+                    layoutManager = LinearLayoutManager(activity!!.applicationContext)
                     adapter = CustomAdapter(wifis, activity!!.applicationContext)
                 }
             } else {
