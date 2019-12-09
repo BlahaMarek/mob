@@ -15,12 +15,13 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         private val TABLE_CONTACTS = "ContactsTable"
         private val KEY_ID = "uid"
         private val KEY_NAME = "name"
+        private val CREATE_CONTACT_TABLE = ("CREATE TABLE " + TABLE_CONTACTS + "("
+                                            + KEY_ID + " TEXT PRIMARY KEY," + KEY_NAME + " TEXT" + ")")
     }
     override fun onCreate(db: SQLiteDatabase?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         //creating table with fields
-        val CREATE_CONTACT_TABLE = ("CREATE TABLE " + TABLE_CONTACTS + "("
-                + KEY_ID + " TEXT PRIMARY KEY," + KEY_NAME + " TEXT" + ")")
+
         db?.execSQL(CREATE_CONTACT_TABLE)
     }
 
@@ -56,7 +57,7 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
-            db.execSQL(selectQuery)
+            db.execSQL(CREATE_CONTACT_TABLE)
             return ArrayList()
         }
         var contactUid: String

@@ -15,12 +15,12 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
         private val TABLE_WIFIS = "WifisTable"
         private val KEY_ID = "uid"
         private val KEY_TIME = "time"
+        private val CREATE_WIFI_TABLE = ("CREATE TABLE " + TABLE_WIFIS + "("
+                    + KEY_ID + " TEXT PRIMARY KEY," + KEY_TIME + " TEXT" + ")")
     }
     override fun onCreate(db: SQLiteDatabase?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         //creating table with fields
-        val CREATE_WIFI_TABLE = ("CREATE TABLE " + TABLE_WIFIS + "("
-                + KEY_ID + " TEXT PRIMARY KEY," + KEY_TIME + " TEXT" + ")")
         db?.execSQL(CREATE_WIFI_TABLE)
     }
 
@@ -56,7 +56,7 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
-            db.execSQL(selectQuery)
+            db.execSQL(CREATE_WIFI_TABLE)
             return ArrayList()
         }
         var wifiUid: String

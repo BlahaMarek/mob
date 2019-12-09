@@ -29,6 +29,10 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         return messages
     }
 
+    fun removeMessages(){
+        messages.clear()
+    }
+
     fun setContactUid(uid: String)
     {
         contactUid = uid
@@ -40,11 +44,11 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
 
     override fun getItemViewType(position: Int): Int {
         val messUid = messages[position].uid
-        return if(messUid == contactUid) {
-            VIEW_TYPE_OTHER_MESSAGE
+        return if(messUid != contactUid) {
+            VIEW_TYPE_MY_MESSAGE
         }
         else {
-            VIEW_TYPE_MY_MESSAGE
+            VIEW_TYPE_OTHER_MESSAGE
         }
     }
 

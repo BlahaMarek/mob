@@ -2,6 +2,7 @@ package com.example.guysdestiny
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,12 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.guysdestiny.localDatabase.MessageDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
+import com.example.guysdestiny.services.MessagingService
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
-import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.GPHSettings
 import com.giphy.sdk.ui.GiphyCoreUI
@@ -36,10 +40,18 @@ class Chat : Fragment() {
     private lateinit var contactUid: String
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
+    lateinit var preferences: SharedPreferences
+    var PREF_NAME = "guysdestiny"
+    var PREF_LOGIN = "login"
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         viewModelData = viewModel.user.value!!
+        preferences = this.activity!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         return inflater.inflate(R.layout.fragment_chat, container, false)
     }
@@ -74,8 +86,8 @@ class Chat : Fragment() {
             currentDate,
             viewModelData.uid
         )
-        postContactListMessages(text)
-        messAdapter.addMessage(message)
+        postContactListMessages(message)
+//        messAdapter.addMessage(message)
         resetInput()
         messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
     }
@@ -93,46 +105,96 @@ class Chat : Fragment() {
     }
 
     fun getContactListMessages() {
+        val dbHandler = MessageDatabaseService(activity!!.applicationContext)
         val contactReadRequest = ContactReadRequest()
         contactReadRequest.contact = contactUid
         contactReadRequest.uid = viewModelData.uid
-        val call: Call<List<ContactReadResponse>> = APIService.create(activity!!.applicationContext).readContactListMessages(contactReadRequest)
-
-        call.enqueue(object : Callback<List<ContactReadResponse>> {
-            override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
-
-                Log.d("badRequest", t.message.toString())
+        if (!ConnectionService().isConnectedToNetwork(activity!!.applicationContext)) {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val messagesFromLocalDb = dbHandler.getMessages(contactUid, viewModelData.uid)
+            messAdapter.removeMessages()
+            for (item in messagesFromLocalDb) {
+                messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
+            }
+            if (messagesFromLocalDb.count() > 0) {
+                setContactUid(messagesFromLocalDb.get(0))
             }
 
-            override fun onResponse(
-                call: Call<List<ContactReadResponse>>,
-                response: Response<List<ContactReadResponse>>
-            ) {
-                Log.d("response", response.message())
-               val res: List<ContactReadResponse> = response.body()!!
-                for(item in res)
-                {
-                    messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
+            messageList?.apply {
+                layoutManager = LinearLayoutManager(context).apply {
+                    stackFromEnd = true
+                    reverseLayout = false
                 }
-                if(res.count() > 0){
-                    setContactUid(res.get(0))
+                adapter = messAdapter
+            }
+        } else {
+            val messagesFromLocalDb = dbHandler.getMessages(contactUid, viewModelData.uid)
+            messAdapter.removeMessages()
+            for (item in messagesFromLocalDb) {
+                messAdapter.addMessage(Message(item.uid_name, item.message, item.time, item.uid))
+            }
+            if (messagesFromLocalDb.count() > 0) {
+                setContactUid(messagesFromLocalDb.get(0))
+            }
+
+            messageList?.apply {
+                layoutManager = LinearLayoutManager(context).apply {
+                    stackFromEnd = true
+                    reverseLayout = false
+                }
+                adapter = messAdapter
+            }
+            val call: Call<List<ContactReadResponse>> =
+                APIService.create(activity!!.applicationContext)
+                    .readContactListMessages(contactReadRequest)
+
+            call.enqueue(object : Callback<List<ContactReadResponse>> {
+                override fun onFailure(call: Call<List<ContactReadResponse>>, t: Throwable) {
+
+                    Log.d("badRequest", t.message.toString())
                 }
 
-
-                messageList?.apply {
-                    layoutManager = LinearLayoutManager(context).apply {
-                        stackFromEnd = true
-                        reverseLayout = false
+                override fun onResponse(
+                    call: Call<List<ContactReadResponse>>,
+                    response: Response<List<ContactReadResponse>>
+                ) {
+                    Log.d("response", response.message())
+                    val res: List<ContactReadResponse> = response.body()!!
+                    messAdapter.removeMessages()
+                    for (item in res) {
+                        messAdapter.addMessage(
+                            Message(
+                                item.uid_name,
+                                item.message,
+                                item.time,
+                                item.uid
+                            )
+                        )
                     }
-                    adapter = messAdapter
-                }
+                    if (res.count() > 0) {
+                        setContactUid(res.get(0))
+                    }
 
-            }
-        })
+                    dbHandler.addMessages(res)
+                    messageList?.apply {
+                        layoutManager = LinearLayoutManager(context).apply {
+                            stackFromEnd = true
+                            reverseLayout = false
+                        }
+                        adapter = messAdapter
+                    }
+
+                }
+            })
+        }
+
     }
 
     fun setContactUid(message: ContactReadResponse){
-        return
         if(viewModel.user.value!!.uid == message.uid){
             viewModel.setUserToWriteFID(message.contact_fid)
             return
@@ -141,12 +203,13 @@ class Chat : Fragment() {
         viewModel.setUserToWriteFID(message.uid_fid)
     }
 
-    fun postContactListMessages(message: String) {
+    fun postContactListMessages(message: Message) {
         val contactMessageRequest = ContactMessageRequest()
         contactMessageRequest.contact = contactUid
-        contactMessageRequest.message = message
+        contactMessageRequest.message = message.message
         contactMessageRequest.uid = viewModelData.uid
-        val call: Call<ResponseBody> = APIService.create(activity!!.applicationContext).postMessageContactList(contactMessageRequest)
+        val call: Call<ResponseBody> = APIService.create(activity!!.applicationContext)
+            .postMessageContactList(contactMessageRequest)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -154,26 +217,17 @@ class Chat : Fragment() {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.d("user refreshed", response.code().toString())
-
-                var req = UserFidRequest()
-//                req.fid = viewModel.userToWriteFID.value!!
-//                req.fid = "cgzwRUxhVMw:APA91bHUzd3au-wwXeQQqiFc97AfVrfmTX1tUQBf3W_qrhXfuEip-EZ4XMEfwVR9DfcCQTzFL-kNZdCg3t-AvJHejmXcQdwG3RqGI4u6acCza3S2loAJhTjweo7mqPs6P8HvEHiUvxhg"
-//                req.uid = viewModelData.uid
-//
-//                val notify: Call<ResponseBody> = APIService.create(activity!!.applicationContext).userFid(req)
-//
-//                notify.enqueue(object : Callback<ResponseBody> {
-//                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                        Log.d("badRequest", t.message.toString())
-//                    }
-//                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-//                        Log.d("notify send", response.code().toString())
-//                    }
-//                    })
+                messAdapter.addMessage(message)
+                getContactListMessages()
+                val service = MessagingService()
+                service.sendNotification(
+                    viewModel.userToWriteFID.value!!,
+                    "id",
+                    viewModelData.uid,
+                    preferences.getString("login", "")!!
+                )
             }
         })
-
     }
 
     fun initGiphy() {

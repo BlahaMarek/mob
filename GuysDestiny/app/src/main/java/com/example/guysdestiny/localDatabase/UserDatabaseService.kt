@@ -16,13 +16,13 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
         private val KEY_ID = "uid"
         private val KEY_ACCESS_TOKEN = "accessToken"
         private val KEY_REFRESH_TOKEN = "refreshToken"
+        private val CREATE_USER_TABLE = ("CREATE TABLE " + TABLE_USERS + "("
+                    + KEY_ID + " TEXT PRIMARY KEY," + KEY_ACCESS_TOKEN + " TEXT,"
+                    + KEY_REFRESH_TOKEN + " TEXT" + ")")
     }
     override fun onCreate(db: SQLiteDatabase?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         //creating table with fields
-        val CREATE_USER_TABLE = ("CREATE TABLE " + TABLE_USERS + "("
-                + KEY_ID + " TEXT PRIMARY KEY," + KEY_ACCESS_TOKEN + " TEXT,"
-                + KEY_REFRESH_TOKEN + " TEXT" + ")")
         db?.execSQL(CREATE_USER_TABLE)
     }
 
@@ -49,13 +49,13 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     //method to get user data
     fun getUser(uid: String):ArrayList<User>{
         val users = ArrayList<User>()
-        val selectQuery = "SELECT  * FROM $TABLE_USERS WHERE $KEY_ID = $uid"
+        val selectQuery = "SELECT  * FROM $TABLE_USERS WHERE $KEY_ID = '$uid'"
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
-            db.execSQL(selectQuery)
+            db.execSQL(CREATE_USER_TABLE)
             return ArrayList()
         }
         var userUid: String

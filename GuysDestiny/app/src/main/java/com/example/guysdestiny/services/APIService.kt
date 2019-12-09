@@ -1,6 +1,7 @@
 package com.example.guysdestiny.services
 
 import android.content.Context
+import com.example.guysdestiny.services.apiModels.NotificationRequest
 import com.example.guysdestiny.services.apiModels.contact.*
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginRequest
@@ -9,6 +10,7 @@ import com.example.guysdestiny.services.apiModels.user.RefreshRequest
 import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -58,6 +60,9 @@ interface APIService {
     @POST("contact/message.php")
     @Headers("ZadanieApiAuth: accept")
     fun postMessageContactList(@Body body: ContactMessageRequest): Call<ResponseBody>
+
+    @POST("send")
+    fun sendNotification(@Body body: NotificationRequest): Call<ResponseBody>
 
     companion object {
 

@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.localDatabase.ContactDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.contact.ContactListRequest
 import com.example.guysdestiny.services.apiModels.contact.ContactListResponse
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
@@ -37,7 +39,7 @@ class ContactList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var contacts = ArrayList<ContactListResponse>()
 
-        if (viewModel.contactList.value != null) {
+        if (!viewModel.contactList.value.isNullOrEmpty()) {
             contacts = ArrayList(viewModel.contactList.value!!)
             rv_contact_list?.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -51,40 +53,83 @@ class ContactList : Fragment() {
         btnWifiList.setOnClickListener {
             view.findNavController().navigate(R.id.wifiList)
         }
+        refresh.setOnClickListener{
+            getContactList(contacts)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
     fun getContactList(contacts: ArrayList<ContactListResponse>) {
-        val contactRequest = ContactListRequest()
-        contactRequest.uid = viewModelData.uid
-        val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
-
-        call.enqueue(object : Callback<List<ContactListResponse>> {
-            override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
-                Log.d("badRequest", t.message.toString())
-            }
-
-            override fun onResponse(
-                call: Call<List<ContactListResponse>>,
-                response: Response<List<ContactListResponse>>
-            ) {
-                val res: List<ContactListResponse> = response.body()!!
-
-                if(res.count() > 0)
+        val dbHandler = ContactDatabaseService(activity!!.applicationContext)
+        // ak nie je pouzivatel pripojeny na internet nemozme volat API zo servera, ale udaje ziskame iba z lokalnej DB
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val contactsFromLocalDb = dbHandler.getContacts()
+            for(item in contactsFromLocalDb){
+                if(!contacts.any { a-> a.id == item.id })
                 {
-                    val dbHandler = ContactDatabaseService(activity!!.applicationContext)
-                    dbHandler.addContacts(res)
-                }
-
-                for(item in res){
-                    contacts.add(ContactListResponse(item.id, item.name))
-                }
-                viewModel.setContactList(contacts)
-                rv_contact_list?.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = ContactAdapter(contacts)
+                    contacts.add(item)
                 }
             }
-        })
+            viewModel.setContactList(contactsFromLocalDb)
+            rv_contact_list?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = ContactAdapter(contacts)
+            }
+        }else{
+            val contactRequest = ContactListRequest()
+            contactRequest.uid = viewModelData.uid
+            // pokial nepride response zo servera, zobrazujeme data ulozenie v lokalnej DB
+            val contactsFromLocalDb = dbHandler.getContacts()
+            for(item in contactsFromLocalDb){
+                if(!contacts.any { a-> a.id == item.id })
+                {
+                    contacts.add(item)
+                }
+            }
+            viewModel.setContactList(contactsFromLocalDb)
+            rv_contact_list?.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = ContactAdapter(contacts)
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+            val call: Call<List<ContactListResponse>> = APIService.create(activity!!.applicationContext).getContactList(contactRequest)
+
+            call.enqueue(object : Callback<List<ContactListResponse>> {
+                override fun onFailure(call: Call<List<ContactListResponse>>, t: Throwable) {
+                    Log.d("badRequest", t.message.toString())
+                }
+
+                override fun onResponse(
+                    call: Call<List<ContactListResponse>>,
+                    response: Response<List<ContactListResponse>>
+                ) {
+                    val res: List<ContactListResponse> = response.body()!!
+
+                    if(res.count() > 0)
+                    {
+                        dbHandler.addContacts(res)
+                    }
+
+                    for(item in res){
+                        if(!contacts.any { a-> a.id == item.id })
+                        {
+                            contacts.add(ContactListResponse(item.id, item.name))
+                        }
+                    }
+                    viewModel.setContactList(contacts)
+                    rv_contact_list?.apply {
+                        layoutManager = LinearLayoutManager(context)
+                        adapter = ContactAdapter(contacts)
+                    }
+                }
+            })
+        }
+
     }
 }

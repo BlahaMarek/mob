@@ -24,18 +24,15 @@ import androidx.activity.OnBackPressedCallback
 import com.example.guysdestiny.localDatabase.UserDatabaseService
 import com.example.guysdestiny.models.User
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.user.RefreshRequest
-
-/**
- * A simple [Fragment] subclass.
- */
-
 
 class Login : Fragment() {
     var PREF_NAME = "guysdestiny"
     var PREF_REFRESH = "refresh"
     var PREF_ACCESS = "access"
     var PREF_UID = "uid"
+    var PREF_LOGIN = "login"
     lateinit var preferences: SharedPreferences
     lateinit var loginName: EditText
     lateinit var passwd: EditText
@@ -88,69 +85,80 @@ class Login : Fragment() {
 
 
     private fun loginUser(context: Context, view: View) {
-//        var user = LoginResponse()
         var request = LoginRequest()
-        request.name = "testiceka"
-        request.password = "heslo123"
-
         request.name = loginName.text.toString()
         request.password = passwd.text.toString()
-//
-//        if (loginName.text.isBlank() || passwd.text.isBlank()) {
-//            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
-//            return
-//        }
 
-        val call: Call<LoginResponse> = APIService.create(context).userLogin(request)
+        if (loginName.text.isBlank() || passwd.text.isBlank()) {
+            Toast.makeText(context,"Vyplnte prihlasovacie udaje", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        call.enqueue(object : Callback<LoginResponse> {
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Toast.makeText(
-                    context,
-                    "Zadali ste chujovske prihlasovacie udaje",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Nie ste pripojeny k internetu",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else{
+            val call: Call<LoginResponse> = APIService.create(context).userLogin(request)
+
+            call.enqueue(object : Callback<LoginResponse> {
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    Toast.makeText(
+                        context,
+                        "Zadali ste zle prihlasovacie udaje",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.body() != null) {
+                    context.deleteDatabase("GuysDestinyDatabase")
                     preferences.edit().putString(PREF_REFRESH, response.body()!!.refresh).apply()
                     preferences.edit().putString(PREF_UID, response.body()!!.uid).apply()
                     preferences.edit().putString(PREF_ACCESS, response.body()!!.access).apply()
+                    var s = loginName.text.toString()
+                    preferences.edit().putString(PREF_LOGIN, s).apply()
                     val inputManager =
                         activity!!.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputManager.hideSoftInputFromWindow(
                         view!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
                     )
 
-                    // ulozenie usera do SQLite
-                    val dbHandler = UserDatabaseService(context)
-                    val userToSave = User()
-                    userToSave.uid = response.body()!!.uid
-                    userToSave.access = response.body()!!.access
-                    userToSave.refresh = response.body()!!.refresh
-                    val dbResult = dbHandler.addUser(userToSave)
-                    if(dbResult.toInt() == -1)
-                    {
-                        dbHandler.updateUser(userToSave)
+                        // ulozenie usera do SQLite
+                        val dbHandler = UserDatabaseService(context)
+                        val userToSave = User()
+                        userToSave.uid = response.body()!!.uid
+                        userToSave.access = response.body()!!.access
+                        userToSave.refresh = response.body()!!.refresh
+                        val dbResult = dbHandler.addUser(userToSave)
+                        if(dbResult.toInt() == -1)
+                        {
+                            dbHandler.updateUser(userToSave)
+                        }
+
+                        val intent = Intent(activity, MainActivity::class.java)
+                        intent.putExtra("userUid", response.body()!!.uid)
+                        intent.putExtra("userAccess", response.body()!!.access)
+                        intent.putExtra("userRefresh", response.body()!!.refresh)
+                        startActivity(intent)
+                        activity!!.finish()
+
+
+
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Prihlasovacie udaje nie su spravne",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
-                    val intent = Intent(activity, MainActivity::class.java)
-                    intent.putExtra("userUid", response.body()!!.uid)
-                    intent.putExtra("userAccess", response.body()!!.access)
-                    intent.putExtra("userRefresh", response.body()!!.refresh)
-                    startActivity(intent)
-
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Prihlasovacie udaje nie su spravne",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
-
-            }
-        })
+            })
+        }
     }
 
     private fun signFragment(view: View) {
@@ -179,6 +187,7 @@ class Login : Fragment() {
                     intent.putExtra("userAccess", user.access)
                     intent.putExtra("userRefresh", user.refresh)
                     startActivity(intent)
+                    activity!!.finish()
 
                 } else {
                     Toast.makeText(

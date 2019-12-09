@@ -2,6 +2,7 @@ package com.example.guysdestiny.posts
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,7 +15,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.guysdestiny.R
 import com.example.guysdestiny.UserViewModel
+import com.example.guysdestiny.localDatabase.PostDatabaseService
 import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.ConnectionService
+import com.example.guysdestiny.services.MessagingService
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.giphy.sdk.core.models.Media
@@ -37,6 +41,8 @@ class PostList : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     private lateinit var roomId: String
+    lateinit var preferences: SharedPreferences
+    var PREF_NAME = "guysdestiny"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +52,7 @@ class PostList : Fragment() {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         viewModelData = viewModel.user.value!!
 
+        preferences = this.activity!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         return inflater.inflate(R.layout.fragment_post_list, container, false)
     }
 
@@ -53,8 +60,11 @@ class PostList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         roomId = arguments?.getString("wifiName").toString()
+        if (roomId.equals("public", ignoreCase = true)) {
+            roomId = "XsTDHS3C2YneVmEW5Ry7"
+        }
         Log.d("vm", viewModel.currentWifi.value.toString())
-        if (!viewModel.currentWifi.value.equals(roomId) && !roomId.equals("public", ignoreCase = true)) {
+        if (!viewModel.currentWifi.value.equals(roomId) && !roomId.equals("XsTDHS3C2YneVmEW5Ry7", ignoreCase = true)) {
             Toast.makeText(context, "Na tejto Wifi nie ste pripojeny!", Toast.LENGTH_LONG).show()
             new_post_field_id.visibility = View.GONE
         }
@@ -91,29 +101,47 @@ class PostList : Fragment() {
     }
 
     fun getRoomList() {
-
-        val request = ReadRequest()
-        request.uid = viewModelData.uid
-        request.room = roomId
-
-        val call: Call<ArrayList<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
-        call.enqueue(object : Callback<ArrayList<ReadResponse>> {
-            override fun onFailure(call: Call<ArrayList<ReadResponse>>, t: Throwable) {
-                Log.d("xx", t.message.toString())
-            }
-
-            override fun onResponse(
-                call: Call<ArrayList<ReadResponse>>,
-                response: Response<ArrayList<ReadResponse>>
-            ) {
-                if (response.body() != null) {
-                    val res: ArrayList<ReadResponse> = response.body()!!
-                    res.reverse()
-                    viewModel.setRoomtRead(res)
-                    fillPostListView()
+        val dbHandler = PostDatabaseService(activity!!.applicationContext)
+        //Ak pouzivatel nema pristup na internet zobrazujeme udaje z lokalnej DB a nevolame API yo servera
+        if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
+        {
+            Toast.makeText(
+                context,
+                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                Toast.LENGTH_SHORT
+            ).show()
+            val postsFromLocalDb = dbHandler.getPosts(roomId)
+            viewModel.setRoomtRead(postsFromLocalDb)
+            fillPostListView()
+        }else{
+            val request = ReadRequest()
+            request.uid = viewModelData.uid
+            request.room = roomId
+            // pokial nepridu udaje zo servera, zobrazujeme data y lokalnej DB
+            val postsFromLocalDb = dbHandler.getPosts(roomId)
+            viewModel.setRoomtRead(postsFromLocalDb)
+            fillPostListView()
+            //////////////////////////////////////////////////////////////////////////////////////
+            val call: Call<ArrayList<ReadResponse>> = APIService.create(activity!!.applicationContext).readWifiListMessages(request)
+            call.enqueue(object : Callback<ArrayList<ReadResponse>> {
+                override fun onFailure(call: Call<ArrayList<ReadResponse>>, t: Throwable) {
+                    Log.d("xx", t.message.toString())
                 }
-            }
-        })
+
+                override fun onResponse(
+                    call: Call<ArrayList<ReadResponse>>,
+                    response: Response<ArrayList<ReadResponse>>
+                ) {
+                    if (response.body() != null) {
+                        val res: ArrayList<ReadResponse> = response.body()!!
+                        res.reverse()
+                        dbHandler.addPosts(res)
+                        viewModel.setRoomtRead(res)
+                        fillPostListView()
+                    }
+                }
+            })
+        }
     }
 
     fun addFakePost(newPost: ReadResponse) {
@@ -161,6 +189,13 @@ class PostList : Fragment() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("user refreshed", response.code().toString())
+                val service = MessagingService()
+                service.sendNotification(
+                    "",
+                    arguments?.getString("wifiName").toString(),
+                    viewModelData.uid,
+                    preferences.getString("login", "")!!
+                )
                 getRoomList()
             }
         })

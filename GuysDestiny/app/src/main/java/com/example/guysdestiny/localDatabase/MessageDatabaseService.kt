@@ -21,16 +21,17 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         private val KEY_CONTACT_NAME = "contactName"
         private val KEY_UID_FID = "uidFid"
         private val KEY_CONTACT_FID = "contactFid"
+        private val CREATE_MESSAGE_TABLE = ("CREATE TABLE " + TABLE_MESSAGES +
+                "( id INTEGER PRIMARY KEY AUTOINCREMENT,"+ KEY_ID + " TEXT," + KEY_CONTACT + " TEXT," +
+                    KEY_MESSAGE + " TEXT," + KEY_TIME + " TEXT," +
+                    KEY_UID_NAME + " TEXT," + KEY_CONTACT_NAME + " TEXT," +
+                    KEY_UID_FID + " TEXT," + KEY_CONTACT_FID + " TEXT" + ")")
     }
     override fun onCreate(db: SQLiteDatabase?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         //creating table with fields
-        val CREATE_POST_TABLE = ("CREATE TABLE " + TABLE_MESSAGES + "("
-                + KEY_ID + " TEXT PRIMARY KEY," + KEY_CONTACT + " TEXT," +
-                KEY_MESSAGE + " TEXT," + KEY_TIME + " TEXT," +
-                KEY_UID_NAME + " TEXT," + KEY_CONTACT_NAME + " TEXT," +
-                KEY_UID_FID + " TEXT," + KEY_CONTACT_FID + " TEXT," + ")")
-        db?.execSQL(CREATE_POST_TABLE)
+
+        db?.execSQL(CREATE_MESSAGE_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -43,6 +44,8 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
     //method to insert List of messages data
     fun addMessages(messages: List<ContactReadResponse>){
         val db = this.writableDatabase
+        db!!.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES)
+        onCreate(db)
         for (message in messages)
         {
             val contentValues = ContentValues()
@@ -63,15 +66,16 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
     }
 
     //method to get messages
-    fun getMessages():ArrayList<ContactReadResponse>{
+    fun getMessages(contactUid: String, userUid: String):ArrayList<ContactReadResponse>{
         val messages = ArrayList<ContactReadResponse>()
-        val selectQuery = "SELECT  * FROM $TABLE_MESSAGES"
+        val selectQuery = "SELECT  * FROM $TABLE_MESSAGES WHERE ($KEY_ID = '$contactUid' AND $KEY_CONTACT = '$userUid')" +
+                          " OR ($KEY_ID = '$userUid' AND $KEY_CONTACT = '$contactUid')"
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
-            db.execSQL(selectQuery)
+            db.execSQL(CREATE_MESSAGE_TABLE)
             return ArrayList()
         }
         var id: String

@@ -88,11 +88,7 @@ class SignUp : Fragment() {
                             dbHandler.updateUser(userToSave)
                         }
 
-                        val intent = Intent(activity, MainActivity::class.java)
-                        intent.putExtra("userUid", response.body()!!.uid)
-                        intent.putExtra("userAccess", response.body()!!.access)
-                        intent.putExtra("userRefresh", response.body()!!.refresh)
-                        startActivity(intent)
+                        loginFragment(view)
 
                     } else {
                         if (response.code().equals(500)) {

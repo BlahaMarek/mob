@@ -9,34 +9,66 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProviders
+import com.example.guysdestiny.services.APIService
+import com.example.guysdestiny.services.apiModels.user.UserFidRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     lateinit var preferences: SharedPreferences
+    private lateinit var viewModel: UserViewModel
     val TAG = "ServiceFirebase"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
+
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
 
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Log.w(TAG, "getInstanceId failed", task.exception)
                     return@OnCompleteListener
                 }
-
-                // Get new Instance ID token
                 val token = task.result?.token
 
-                // Log and toast
-                val msg =token.toString()
-                Log.d(TAG, msg)
-                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                val msg = token.toString()
+
+                var req = UserFidRequest()
+                req.fid = msg
+                req.uid = viewModel.user.value!!.uid
+
+                val notify: Call<ResponseBody> = APIService.create(baseContext).userFid(req)
+
+                notify.enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.d("badRequest", t.message.toString())
+                    }
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        Log.d("notify send", response.code().toString())
+                    }
+                })
             })
+
+        FirebaseMessaging.getInstance().subscribeToTopic("XsTDHS3C2YneVmEW5Ry7")
+            .addOnCompleteListener { task ->
+                var msg = "Ide to"
+                if (!task.isSuccessful) {
+                    msg = "Nejde to"
+                }
+                Log.d("Message", msg)
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -51,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             preferences.edit().clear().apply()
 
             val intent = Intent(this, LoginActivity::class.java)
+            baseContext.deleteDatabase("GuysDestinyDatabase")
             startActivity(intent)
             true
         }
