@@ -21,17 +21,17 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         private val KEY_CONTACT_NAME = "contactName"
         private val KEY_UID_FID = "uidFid"
         private val KEY_CONTACT_FID = "contactFid"
-        private val CREATE_POST_TABLE = ("CREATE TABLE " + TABLE_MESSAGES +
+        private val CREATE_MESSAGE_TABLE = ("CREATE TABLE " + TABLE_MESSAGES +
                 "( id INTEGER PRIMARY KEY AUTOINCREMENT,"+ KEY_ID + " TEXT," + KEY_CONTACT + " TEXT," +
                     KEY_MESSAGE + " TEXT," + KEY_TIME + " TEXT," +
                     KEY_UID_NAME + " TEXT," + KEY_CONTACT_NAME + " TEXT," +
-                    KEY_UID_FID + " TEXT," + KEY_CONTACT_FID + " TEXT," + ")")
+                    KEY_UID_FID + " TEXT," + KEY_CONTACT_FID + " TEXT" + ")")
     }
     override fun onCreate(db: SQLiteDatabase?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         //creating table with fields
 
-        db?.execSQL(CREATE_POST_TABLE)
+        db?.execSQL(CREATE_MESSAGE_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -75,7 +75,7 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
-            db.execSQL(CREATE_POST_TABLE)
+            db.execSQL(CREATE_MESSAGE_TABLE)
             return ArrayList()
         }
         var id: String

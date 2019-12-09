@@ -71,7 +71,7 @@ class ContactList : Fragment() {
             ).show()
             val contactsFromLocalDb = dbHandler.getContacts()
             for(item in contactsFromLocalDb){
-                if(contacts.any { a-> a.id == item.id })
+                if(!contacts.any { a-> a.id == item.id })
                 {
                     contacts.add(item)
                 }
@@ -87,7 +87,7 @@ class ContactList : Fragment() {
             // pokial nepride response zo servera, zobrazujeme data ulozenie v lokalnej DB
             val contactsFromLocalDb = dbHandler.getContacts()
             for(item in contactsFromLocalDb){
-                if(contacts.any { a-> a.id == item.id })
+                if(!contacts.any { a-> a.id == item.id })
                 {
                     contacts.add(item)
                 }
@@ -117,7 +117,7 @@ class ContactList : Fragment() {
                     }
 
                     for(item in res){
-                        if(contacts.any { a-> a.id == item.id })
+                        if(!contacts.any { a-> a.id == item.id })
                         {
                             contacts.add(ContactListResponse(item.id, item.name))
                         }
