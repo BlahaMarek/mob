@@ -141,6 +141,9 @@ class Login : Fragment() {
                     intent.putExtra("userAccess", response.body()!!.access)
                     intent.putExtra("userRefresh", response.body()!!.refresh)
                     startActivity(intent)
+                    activity!!.finish()
+
+
 
                 } else {
                     Toast.makeText(
@@ -180,6 +183,7 @@ class Login : Fragment() {
                     intent.putExtra("userAccess", user.access)
                     intent.putExtra("userRefresh", user.refresh)
                     startActivity(intent)
+                    activity!!.finish()
 
                 } else {
                     Toast.makeText(

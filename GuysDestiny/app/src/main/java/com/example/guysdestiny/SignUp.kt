@@ -93,6 +93,7 @@ class SignUp : Fragment() {
                         intent.putExtra("userAccess", response.body()!!.access)
                         intent.putExtra("userRefresh", response.body()!!.refresh)
                         startActivity(intent)
+                        activity!!.finish()
 
                     } else {
                         if (response.code().equals(500)) {

@@ -78,6 +78,7 @@ class WifiList : Fragment() {
             val wifis = ArrayList<WifiListResponse>()
             wifiMan(wifis)
         }
+
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -86,7 +87,8 @@ class WifiList : Fragment() {
         wifisNames.add("Public")
 
         val wifiManager = activity!!.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        if ( wifiManager.connectionInfo.ssid != null) {
+
+        if (wifiManager.connectionInfo.ssid != null) {
             var wifiSSID = wifiManager.connectionInfo.ssid.toString().replace("\"", "")
             wifiSSID = wifiSSID.replace(regex,"_")
 
@@ -98,64 +100,37 @@ class WifiList : Fragment() {
 
             Log.d("ssid", wifiSSID)
         } else {
-            var wifiBSSID = wifiManager.connectionInfo.bssid.toString()
-            wifiBSSID = wifiBSSID.replace(regex,"_")
+            if (wifiManager.connectionInfo.bssid != null) {
+                var wifiBSSID = wifiManager.connectionInfo.bssid.toString()
+                wifiBSSID = wifiBSSID.replace(regex,"_")
 
-            if (!wifisNames.contains(wifiBSSID)) {
-                wifis.add(WifiListResponse(wifiBSSID, "14:00:00"))
-                wifisNames.add(wifiBSSID)
-                viewModel.setCurrentWifi(wifiBSSID)
+                if (!wifisNames.contains(wifiBSSID)) {
+                    wifis.add(WifiListResponse(wifiBSSID, "14:00:00"))
+                    wifisNames.add(wifiBSSID)
+                    viewModel.setCurrentWifi(wifiBSSID)
+                }
+                Log.d("bssid", wifiBSSID)
             }
-            Log.d("bssid", wifiBSSID)
         }
 
         getRoomList(wifis)
     }
 
     fun getRoomList(wifis: ArrayList<WifiListResponse>) {
-        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
         // ak pouzivatel nema pripojenie na net, nemusime volat API na server, ale iba vytiahneme veci z lokalnej databazy
         if(!ConnectionService().isConnectedToNetwork(activity!!.applicationContext))
         {
             Toast.makeText(
                 context,
-                "Ne ste pripojený k internetu, preto všetky údaje nemusia byť aktuálne",
+                "Nie ste pripojený k internetu, preto údaje nemusia byť aktuálne",
                 Toast.LENGTH_SHORT
             ).show()
-            val wifisFromLocalDb = dbHandler.getWifis()
-            for(item in wifisFromLocalDb){
-                var ssid = item.roomid
-                ssid = ssid.replace(regex,"_")
-
-                if (!wifisNames.contains(ssid)) {
-                    wifis.add(WifiListResponse(ssid, "14:00:00"))
-                }
-            }
-            viewModel.setRoomtList(wifis)
+            getDataFromDatabase(wifis)
             wifisNames.clear()
-            recyclerView_wifiList?.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = CustomAdapter(wifis, activity!!.applicationContext)
-            }
-        }else{
+        } else {
+            getDataFromDatabase(wifis)
             val request = WifiListRequest()
             request.uid = viewModelData.uid
-            // zatial kym nepride response zo servera nastavime data z lokalnej databazy
-            val wifisFromLocalDb = dbHandler.getWifis()
-            for(item in wifisFromLocalDb){
-                var ssid = item.roomid
-                ssid = ssid.replace(regex,"_")
-
-                if (!wifisNames.contains(ssid)) {
-                    wifis.add(WifiListResponse(ssid, "14:00:00"))
-                }
-            }
-            viewModel.setRoomtList(wifis)
-            recyclerView_wifiList?.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = CustomAdapter(wifis, activity!!.applicationContext)
-            }
-            ///////////////////////////////////////////////////////////////////////////////
             val call: Call<List<WifiListResponse>> = APIService.create(activity!!.applicationContext).getWifiList(request)
             call.enqueue(object : Callback<List<WifiListResponse>> {
                 override fun onFailure(call: Call<List<WifiListResponse>>, t: Throwable) {
@@ -164,17 +139,18 @@ class WifiList : Fragment() {
 
                 override fun onResponse(call: Call<List<WifiListResponse>>, response: Response<List<WifiListResponse>>) {
                     if ( response.body() != null) {
+                        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
                         val res: List<WifiListResponse> = response.body()!!
                         if(res.count() > 0)
                         {
                             dbHandler.addWifis(res)
                         }
-                        val wifisFromLocalDb = dbHandler.getWifis()
                         for(item in res){
                             var ssid = item.roomid
                             ssid = ssid.replace(regex,"_")
 
                             if (!wifisNames.contains(ssid)) {
+                                wifisNames.add(ssid)
                                 wifis.add(WifiListResponse(ssid, "14:00:00"))
                             }
                         }
@@ -190,6 +166,25 @@ class WifiList : Fragment() {
         }
     }
 
+    fun getDataFromDatabase(wifis: ArrayList<WifiListResponse>) {
+        val dbHandler = WifiDatabaseService(activity!!.applicationContext)
+        val wifisFromLocalDb = dbHandler.getWifis()
+        for(item in wifisFromLocalDb){
+            var ssid = item.roomid
+            ssid = ssid.replace(regex,"_")
+
+            if (!wifisNames.contains(ssid)) {
+                wifisNames.add(ssid)
+                wifis.add(WifiListResponse(ssid, "14:00:00"))
+            }
+        }
+        viewModel.setRoomtList(wifis)
+        recyclerView_wifiList?.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = CustomAdapter(wifis, activity!!.applicationContext)
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_LOCATION -> {
@@ -199,7 +194,6 @@ class WifiList : Fragment() {
 
                     if (viewModel.roomList.value != null) {
                         wifis = ArrayList(viewModel.roomList.value!!)
-
                         recyclerView_wifiList?.apply {
                             layoutManager = LinearLayoutManager(context)
                             adapter = CustomAdapter(wifis, activity!!.applicationContext)
@@ -208,7 +202,7 @@ class WifiList : Fragment() {
                         wifiMan(wifis)
                     }
                 } else {
-                    Log.d("eee", "no permission for Location")
+                    Log.d("location", "no permission for Location")
                 }
                 return
             }
