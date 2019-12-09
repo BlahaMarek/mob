@@ -23,6 +23,7 @@ import com.example.guysdestiny.localDatabase.WifiDatabaseService
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.ConnectionService
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.fragment_wifi_list.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -83,6 +84,9 @@ class WifiList : Fragment() {
     }
 
     fun wifiMan(wifis: ArrayList<WifiListResponse>) {
+        if (viewModel.currentWifi.value != null) {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(viewModel.currentWifi.value!!)
+        }
         wifis.add(WifiListResponse("Public", "14:00:00"))
         wifisNames.add("Public")
 
@@ -114,6 +118,15 @@ class WifiList : Fragment() {
         }
 
         getRoomList(wifis)
+
+        FirebaseMessaging.getInstance().subscribeToTopic(viewModel.currentWifi.value!!)
+            .addOnCompleteListener { task ->
+                var msg = "Ide to"
+                if (!task.isSuccessful) {
+                    msg = "Nejde to"
+                }
+                Log.d("Message", msg)
+            }
     }
 
     fun getRoomList(wifis: ArrayList<WifiListResponse>) {

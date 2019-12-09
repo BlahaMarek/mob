@@ -37,13 +37,9 @@ class MainActivity : AppCompatActivity() {
                 if (!task.isSuccessful) {
                     return@OnCompleteListener
                 }
-
-                // Get new Instance ID token
                 val token = task.result?.token
 
-                // Log and toast
-                val msg =token.toString()
-                Log.d(TAG, msg)
+                val msg = token.toString()
 
                 var req = UserFidRequest()
                 req.fid = msg
@@ -55,24 +51,23 @@ class MainActivity : AppCompatActivity() {
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Log.d("badRequest", t.message.toString())
                     }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
                         Log.d("notify send", response.code().toString())
                     }
                 })
-
-
-                Log.d("direbaseToken", msg)
-                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
             })
 
-        FirebaseMessaging.getInstance().subscribeToTopic("public")
+        FirebaseMessaging.getInstance().subscribeToTopic("XsTDHS3C2YneVmEW5Ry7")
             .addOnCompleteListener { task ->
-                var msg = "Ide to ako kurva"
+                var msg = "Ide to"
                 if (!task.isSuccessful) {
-                    msg = "Nejde to ako kurva"
+                    msg = "Nejde to"
                 }
-                Log.d(TAG, msg)
-                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                Log.d("Message", msg)
             }
     }
 

@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
@@ -33,6 +34,10 @@ import java.util.*
 
 class MessagingService : FirebaseMessagingService() {
     private lateinit var notificationManager: NotificationManager
+    lateinit var preferences: SharedPreferences
+    var PREF_NAME = "guysdestiny"
+
+
     val TAG = "ServiceFirebase"
     private val ADMIN_CHANNEL_ID = "GuysDestiny"
 
@@ -42,6 +47,13 @@ class MessagingService : FirebaseMessagingService() {
         remoteMessage?.let { message ->
             Log.i(TAG, "From: " + remoteMessage!!.from)
             Log.i(TAG, "Notification Message Body: " + remoteMessage.notification!!.body)
+            preferences =
+                getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            if (remoteMessage.notification!!.title.equals(
+                    preferences.getString( "login","")!!) || preferences.getString("uid", "").equals("")
+            ) {
+                return
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = ADMIN_CHANNEL_ID
@@ -63,8 +75,8 @@ class MessagingService : FirebaseMessagingService() {
 
             var builder = NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(remoteMessage!!.from)
-                .setContentText(remoteMessage.notification!!.body)
+                .setContentTitle(remoteMessage!!.notification!!.title)
+                .setContentText("Prijali ste novu spravu")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
 
@@ -78,10 +90,9 @@ class MessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, token)
     }
 
-    fun sendNotification (token: String, topics: String) {
+    fun sendNotification(token: String, topics: String, message: String, from: String) {
 
         val client = OkHttpClient.Builder().addInterceptor { chain ->
             val newRequest = chain.request().newBuilder()
@@ -99,18 +110,19 @@ class MessagingService : FirebaseMessagingService() {
         var body = NotificationRequest()
         var notif = NotificationBody()
 
-        notif.message = "Mňam do píči!!"
-        notif.title = "Fuj do píči!!"
+        notif.message = message
+        notif.title = from
 
         body.notification = notif
 
-        if(topics.equals("id")) {
+        if (topics.equals("id")) {
             body.to = token
         } else {
             body.to = "/topics/$topics"
         }
 
-        val call: Call<ResponseBody> = retrofit.create(APIService::class.java).sendNotification(body)
+        val call: Call<ResponseBody> =
+            retrofit.create(APIService::class.java).sendNotification(body)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

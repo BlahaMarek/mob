@@ -27,6 +27,10 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         return messages
     }
 
+    fun removeMessages(){
+        messages.clear()
+    }
+
     fun setContactUid(uid: String)
     {
         contactUid = uid

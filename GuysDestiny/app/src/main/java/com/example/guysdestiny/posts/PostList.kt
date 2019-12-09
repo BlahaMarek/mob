@@ -2,6 +2,7 @@ package com.example.guysdestiny.posts
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.example.guysdestiny.UserViewModel
 import com.example.guysdestiny.localDatabase.PostDatabaseService
 import com.example.guysdestiny.services.APIService
 import com.example.guysdestiny.services.ConnectionService
+import com.example.guysdestiny.services.MessagingService
 import com.example.guysdestiny.services.apiModels.room.*
 import com.example.guysdestiny.services.apiModels.user.LoginResponse
 import com.giphy.sdk.core.models.Media
@@ -39,6 +41,8 @@ class PostList : Fragment() {
     private lateinit var viewModel: UserViewModel
     private lateinit var viewModelData: LoginResponse
     private lateinit var roomId: String
+    lateinit var preferences: SharedPreferences
+    var PREF_NAME = "guysdestiny"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +52,7 @@ class PostList : Fragment() {
         viewModel = activity?.let { ViewModelProviders.of(it).get(UserViewModel::class.java) }!!
         viewModelData = viewModel.user.value!!
 
+        preferences = this.activity!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         return inflater.inflate(R.layout.fragment_post_list, container, false)
     }
 
@@ -55,8 +60,11 @@ class PostList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         roomId = arguments?.getString("wifiName").toString()
+        if (roomId.equals("public", ignoreCase = true)) {
+            roomId = "XsTDHS3C2YneVmEW5Ry7"
+        }
         Log.d("vm", viewModel.currentWifi.value.toString())
-        if (!viewModel.currentWifi.value.equals(roomId) && !roomId.equals("public", ignoreCase = true)) {
+        if (!viewModel.currentWifi.value.equals(roomId) && !roomId.equals("XsTDHS3C2YneVmEW5Ry7", ignoreCase = true)) {
             Toast.makeText(context, "Na tejto Wifi nie ste pripojeny!", Toast.LENGTH_LONG).show()
             new_post_field_id.visibility = View.GONE
         }
@@ -181,6 +189,13 @@ class PostList : Fragment() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("user refreshed", response.code().toString())
+                val service = MessagingService()
+                service.sendNotification(
+                    "",
+                    arguments?.getString("wifiName").toString(),
+                    viewModelData.uid,
+                    preferences.getString("login", "")!!
+                )
                 getRoomList()
             }
         })
