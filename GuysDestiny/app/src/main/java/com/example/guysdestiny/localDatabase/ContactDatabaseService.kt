@@ -34,8 +34,9 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
 
     //method to insert List of contacts data
     fun addContacts(contacts: List<ContactListResponse>){
-        val db = this.writableDatabase
         val existingContacts = getContacts()
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         for (contact in contacts)
         {
             if(!existingContacts.any{c -> c.id == contact.id})
@@ -56,12 +57,14 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
     fun getContacts():ArrayList<ContactListResponse>{
         val contacts = ArrayList<ContactListResponse>()
         val selectQuery = "SELECT  * FROM $TABLE_CONTACTS"
-        val db = this.readableDatabase
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_CONTACT_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var contactUid: String
@@ -76,6 +79,7 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
                 contacts.add(contact)
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return contacts
     }
 }

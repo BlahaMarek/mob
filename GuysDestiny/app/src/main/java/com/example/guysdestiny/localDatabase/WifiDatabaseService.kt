@@ -33,12 +33,11 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
 
     //method to insert List of wifis data
     fun addWifis(wifis: List<WifiListResponse>){
+        val existingWifis = getWifis()
         val db = this.writableDatabase
-        val wifis = getWifis()
-        val existingWifis = this.readableDatabase
         for (wifi in wifis)
         {
-            if(!wifis.any{ w -> w.roomid == wifi.roomid}) {
+            if(!existingWifis.any{ w -> w.roomid == wifi.roomid}) {
                 val contentValues = ContentValues()
                 contentValues.put(KEY_ID, wifi.roomid)
                 contentValues.put(KEY_TIME, wifi.time)
@@ -55,12 +54,13 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     fun getWifis():ArrayList<WifiListResponse>{
         val wifis = ArrayList<WifiListResponse>()
         val selectQuery = "SELECT  * FROM $TABLE_WIFIS"
-        val db = this.readableDatabase
+        val db = this.writableDatabase
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_WIFI_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var wifiUid: String
@@ -73,6 +73,7 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 wifis.add(wifi)
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return wifis
     }
 }

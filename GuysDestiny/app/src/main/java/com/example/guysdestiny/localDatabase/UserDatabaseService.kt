@@ -35,8 +35,10 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
 
     //method to insert data
     fun addUser(user: User):Long{
-        val db = this.writableDatabase
         val existingUsers = getUser(user.uid)
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
+        var success = 0
         if(!existingUsers.any())
         {
             val contentValues = ContentValues()
@@ -44,21 +46,23 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
             contentValues.put(KEY_ACCESS_TOKEN, user.access)
             contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
             // Inserting Row
-            val success = db.insert(TABLE_USERS, null, contentValues)
-            return success
+            success = db.insert(TABLE_USERS, null, contentValues).toInt()
         }
-        return 0
+        db.close() // Closing database connection
+        return success.toLong()
     }
     //method to get user data
     fun getUser(uid: String):ArrayList<User>{
         val users = ArrayList<User>()
         val selectQuery = "SELECT  * FROM $TABLE_USERS WHERE $KEY_ID = '$uid'"
-        val db = this.readableDatabase
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_USER_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var userUid: String
@@ -76,12 +80,14 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 users.add(user)
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return users
     }
     //method to update data
     fun updateUser(user: User): Int{
-        val db = this.writableDatabase
         val existingUser = getUser(user.uid)
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         var success = 0
         if(existingUser.any())
         {

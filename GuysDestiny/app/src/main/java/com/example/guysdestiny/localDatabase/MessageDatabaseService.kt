@@ -44,6 +44,7 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
     //method to insert List of messages data
     fun addMessages(messages: List<ContactReadResponse>){
         val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         db!!.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES)
         onCreate(db)
         for (message in messages)
@@ -70,12 +71,14 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
         val messages = ArrayList<ContactReadResponse>()
         val selectQuery = "SELECT  * FROM $TABLE_MESSAGES WHERE ($KEY_ID = '$contactUid' AND $KEY_CONTACT = '$userUid')" +
                           " OR ($KEY_ID = '$userUid' AND $KEY_CONTACT = '$contactUid')"
-        val db = this.readableDatabase
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_MESSAGE_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var id: String
@@ -110,6 +113,7 @@ class MessageDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
 
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return messages
     }
 }

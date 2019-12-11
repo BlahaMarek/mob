@@ -39,6 +39,7 @@ class PostDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     //method to insert List of posts data
     fun addPosts(posts: List<ReadResponse>){
         val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         db!!.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS)
         onCreate(db)
         for (post in posts)
@@ -61,12 +62,14 @@ class PostDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     fun getPosts(roomId : String):ArrayList<ReadResponse>{
         val posts = ArrayList<ReadResponse>()
         val selectQuery = "SELECT  * FROM $TABLE_POSTS WHERE $KEY_ROOM_ID = '$roomId'"
-        val db = this.readableDatabase
+        val db = this.writableDatabase
+        db.disableWriteAheadLogging()
         var cursor: Cursor? = null
         try{
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_POST_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var postUid: String
@@ -91,6 +94,7 @@ class PostDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 posts.add(post)
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return posts
     }
 }
