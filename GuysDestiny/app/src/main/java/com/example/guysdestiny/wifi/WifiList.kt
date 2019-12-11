@@ -89,6 +89,8 @@ class WifiList : Fragment() {
         }
         wifis.add(WifiListResponse("Public", "14:00:00"))
         wifisNames.add("Public")
+        wifisNames.add("XsTDHS3C2YneVmEW5Ry7")
+
 
         val wifiManager = activity!!.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
