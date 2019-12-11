@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                 })
             })
 
-        FirebaseMessaging.getInstance().subscribeToTopic("XsTDHS3C2YneVmEW5Ry7")
+        FirebaseMessaging.getInstance().subscribeToTopic("Public")
             .addOnCompleteListener { task ->
                 var msg = "Ide to"
                 if (!task.isSuccessful) {
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             preferences = this.getSharedPreferences("guysdestiny", Context.MODE_PRIVATE)
             preferences.edit().clear().apply()
 
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("XsTDHS3C2YneVmEW5Ry7")
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("Public")
             FirebaseMessaging.getInstance().unsubscribeFromTopic(viewModel.currentWifi.value!!)
 
             Thread(Runnable {
