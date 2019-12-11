@@ -25,6 +25,7 @@
             android:inputType="text" />
 
         <ImageButton
+            android:contentDescription="click me"
             android:id="@+id/bt_send_sessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,6 +36,7 @@
 
 
     <ImageButton
+        android:contentDescription="click that"
         android:id="@+id/bt_addGif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

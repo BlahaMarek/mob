@@ -41,6 +41,7 @@
             android:maxLines="4"/>
 
         <ImageButton
+            android:contentDescription="click it"
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,6 +50,7 @@
             android:background="@drawable/basic_button"
             app:srcCompat="@drawable/sendicon" />
         <ImageButton
+            android:contentDescription="click this"
             android:id="@+id/bt_addGif_chat"
             android:layout_marginTop="4dp"
             android:layout_marginRight="4dp"
