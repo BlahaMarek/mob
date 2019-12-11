@@ -1,8 +1,7 @@
 package com.example.guysdestiny
 
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -44,6 +43,13 @@ class Chat : Fragment() {
     var PREF_NAME = "guysdestiny"
     var PREF_LOGIN = "login"
 
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d("xx", "ppppppppppppppp")
+            getContactListMessages()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +60,18 @@ class Chat : Fragment() {
         preferences = this.activity!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         return inflater.inflate(R.layout.fragment_chat, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        view!!.context.registerReceiver(receiver, IntentFilter("CHAT_NOTIFICATION"))
+        Log.d("ZACAL", "SSSSSSSSSSSSSSSSSs")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        view!!.context.unregisterReceiver(receiver)
+        Log.d("SKONCIL", "SSSSSSSSSSSSSSSSSs")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,7 +107,9 @@ class Chat : Fragment() {
         postContactListMessages(message)
 //        messAdapter.addMessage(message)
         resetInput()
-        messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
+        if (!messAdapter.getMessages().isNullOrEmpty()) {
+            messageList.smoothScrollToPosition(messAdapter.getMessages().size - 1)
+        }
     }
 
      fun resetInput() {
@@ -220,6 +240,10 @@ class Chat : Fragment() {
                 messAdapter.addMessage(message)
                 getContactListMessages()
                 val service = MessagingService()
+                if (viewModel.userToWriteFID.value == null) {
+                    return
+                }
+
                 service.sendNotification(
                     viewModel.userToWriteFID.value!!,
                     "id",

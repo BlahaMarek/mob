@@ -59,18 +59,22 @@ class MessagingService : FirebaseMessagingService() {
             Log.i(TAG, "Notification Message Body: " + remoteMessage.notification!!.body)
             preferences =
                 getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            if (remoteMessage.notification!!.title.equals(
-                    preferences.getString("login", "")!!
-                ) || preferences.getString("uid", "").equals("")
+            if (
+                remoteMessage.notification!!.title.equals( preferences.getString("login", "")!!)
+                || preferences.getString("uid", "").equals("")
             ) {
                 return
             }
-            // POSTY
-            if (remoteMessage.notification!!.body.equals("")) {
-                PostList().getRoomList()
+
+            var sendIntent: Intent
+
+            if(remoteMessage.notification!!.body == null) {
+                sendIntent = Intent ("POST_NOTIFICATION")
             } else {
-                Chat().getContactListMessages()
+                sendIntent = Intent ("CHAT_NOTIFICATION")
             }
+
+            sendBroadcast(sendIntent)
 
             // NOTIFIKACIA
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

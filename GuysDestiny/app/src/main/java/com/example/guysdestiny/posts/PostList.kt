@@ -1,8 +1,7 @@
 package com.example.guysdestiny.posts
 
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -44,6 +43,13 @@ class PostList : Fragment() {
     lateinit var preferences: SharedPreferences
     var PREF_NAME = "guysdestiny"
 
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d("xx", "chhhhh")
+            getRoomList()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,6 +79,17 @@ class PostList : Fragment() {
         setButtonsClickListeners(view)
     }
 
+    override fun onStart() {
+        super.onStart()
+        view!!.context.registerReceiver(receiver, IntentFilter("POST_NOTIFICATION"))
+        Log.d("ZACAL_POST", "SSSSSSSSSSSSSSSSSs")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        view!!.context.unregisterReceiver(receiver)
+        Log.d("SKONCIL_POST", "SSSSSSSSSSSSSSSSSs")
+    }
 
     fun fillPostListView() {
         recyclerView_posts?.apply {
@@ -176,6 +193,14 @@ class PostList : Fragment() {
 //        Log.d("xx" ,message);
 //        addFakePost(ReadResponse(viewModelData.uid, roomId, message, "Me", "Now"))
         postRoomListMessages(messageReq, viewModelData.access)
+        var response = ReadResponse()
+        response.message = message
+        response.name = ""
+        response.roomid = roomId
+        response.time = "NOW"
+        response.uid = viewModelData.uid
+        viewModel.addRoomListPost(response)
+        fillPostListView()
     }
 
     fun postRoomListMessages(request: MessageRequest, TOKEN: String) {
@@ -196,7 +221,7 @@ class PostList : Fragment() {
                     viewModelData.uid,
                     preferences.getString("login", "")!!
                 )
-                getRoomList()
+//                getRoomList()
             }
         })
     }

@@ -44,5 +44,9 @@ class UserViewModel : ViewModel() {
         this.roomRead.value = list
     }
 
+    fun addRoomListPost (response: ReadResponse) {
+        this.roomRead.value!!.add(response)
+    }
+
 
 }
