@@ -45,7 +45,6 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
             contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
             // Inserting Row
             val success = db.insert(TABLE_USERS, null, contentValues)
-            db.close() // Closing database connection
             return success
         }
         return 0
@@ -60,7 +59,6 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_USER_TABLE)
-            db.close() // Closing database connection
             return ArrayList()
         }
         var userUid: String
@@ -78,7 +76,6 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 users.add(user)
             } while (cursor.moveToNext())
         }
-        db.close() // Closing database connection
         return users
     }
     //method to update data
