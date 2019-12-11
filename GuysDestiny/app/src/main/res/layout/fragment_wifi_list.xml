@@ -31,7 +31,6 @@
             android:id="@+id/btnContactList"
             android:text="@string/kontakty"
             android:textSize="14dp"
-            android:layout_marginLeft="1dp"
             android:clickable="true"
             android:layout_weight="1"
             android:focusable="true"
@@ -41,7 +40,6 @@
             android:layout_gravity="bottom" />
 
     </LinearLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_wifiList"
         android:layout_width="match_parent"
