@@ -19,6 +19,12 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var preferences: SharedPreferences
@@ -81,6 +87,18 @@ class MainActivity : AppCompatActivity() {
         R.id.action_logout -> {
             preferences = this.getSharedPreferences("guysdestiny", Context.MODE_PRIVATE)
             preferences.edit().clear().apply()
+
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("XsTDHS3C2YneVmEW5Ry7")
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(viewModel.currentWifi.value!!)
+
+            Thread(Runnable {
+                try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }).start()
+
 
             val intent = Intent(this, LoginActivity::class.java)
             baseContext.deleteDatabase("GuysDestinyDatabase")

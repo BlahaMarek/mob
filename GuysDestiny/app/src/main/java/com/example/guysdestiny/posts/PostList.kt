@@ -195,7 +195,7 @@ class PostList : Fragment() {
         postRoomListMessages(messageReq, viewModelData.access)
         var response = ReadResponse()
         response.message = message
-        response.name = ""
+        response.name = "me"
         response.roomid = roomId
         response.time = "NOW"
         response.uid = viewModelData.uid

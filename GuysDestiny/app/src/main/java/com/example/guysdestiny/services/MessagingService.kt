@@ -61,7 +61,7 @@ class MessagingService : FirebaseMessagingService() {
                 getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             if (
                 remoteMessage.notification!!.title.equals( preferences.getString("login", "")!!)
-                || preferences.getString("uid", "").equals("")
+                || preferences.getString("uid", null).isNullOrEmpty()
             ) {
                 return
             }
