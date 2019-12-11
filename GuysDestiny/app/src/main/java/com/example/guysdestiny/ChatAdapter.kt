@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -73,15 +74,18 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         private var messageText: TextView = view.txtSenderMessage
         private var timeText: TextView = view.txtSenderMessageTime
         private var imageView: ImageView = view.iv_gif_view_chat_send
+        private var imageCont: LinearLayout = view.iv_gif_view_chat_send_container
         override fun bind(message: Message) {
 
             timeText.text = message.time
             if(!isGif(message.message)){
                 imageView.visibility = View.GONE
+                imageCont.visibility = View.GONE
                 messageText.visibility = View.VISIBLE
                 messageText.text = message.message
             }else {
                 messageText.visibility = View.GONE
+                imageCont.visibility = View.VISIBLE
                 imageView.visibility = View.VISIBLE
                 Glide.with(context).asGif().load(formatUrl(message.message)).into(imageView);
             }
@@ -94,6 +98,7 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
         private var userText: TextView = view.txtReceiverUser
         private var timeText: TextView = view.txtReceiverMessageTime
         private var imageView: ImageView = view.iv_gif_view_chat_rec
+        private var imageCont: LinearLayout = view.iv_gif_view_chat_receiver_container
         override fun bind(message: Message) {
             timeText.text = message.time
             userText.text = message.user
@@ -101,10 +106,12 @@ class ChatAdapter(val context: Context) : RecyclerView.Adapter<ChatAdapter.Messa
 
             if(!isGif(message.message)){
                 imageView.visibility = View.GONE
+                imageCont.visibility = View.GONE
                 messageText.visibility = View.VISIBLE
                 messageText.text = message.message
             }else {
                 messageText.visibility = View.GONE
+                imageCont.visibility = View.VISIBLE
                 imageView.visibility = View.VISIBLE
                 Glide.with(context).asGif().load(formatUrl(message.message)).into(imageView);
             }
