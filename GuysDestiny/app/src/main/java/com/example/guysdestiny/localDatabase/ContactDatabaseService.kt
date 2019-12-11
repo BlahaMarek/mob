@@ -35,13 +35,17 @@ class ContactDatabaseService(context: Context): SQLiteOpenHelper(context,DATABAS
     //method to insert List of contacts data
     fun addContacts(contacts: List<ContactListResponse>){
         val db = this.writableDatabase
+        val existingContacts = getContacts()
         for (contact in contacts)
         {
-            val contentValues = ContentValues()
-            contentValues.put(KEY_ID, contact.id)
-            contentValues.put(KEY_NAME, contact.name)
-            // Inserting Row
-            val success = db.insert(TABLE_CONTACTS, null, contentValues)
+            if(!existingContacts.any{c -> c.id == contact.id})
+            {
+                val contentValues = ContentValues()
+                contentValues.put(KEY_ID, contact.id)
+                contentValues.put(KEY_NAME, contact.name)
+                // Inserting Row
+                val success = db.insert(TABLE_CONTACTS, null, contentValues)
+            }
         }
 
         //2nd argument is String containing nullColumnHack

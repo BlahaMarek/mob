@@ -34,13 +34,17 @@ class WifiDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     //method to insert List of wifis data
     fun addWifis(wifis: List<WifiListResponse>){
         val db = this.writableDatabase
+        val wifis = getWifis()
+        val existingWifis = this.readableDatabase
         for (wifi in wifis)
         {
-            val contentValues = ContentValues()
-            contentValues.put(KEY_ID, wifi.roomid)
-            contentValues.put(KEY_TIME, wifi.time)
-            // Inserting Row
-            val success = db.insert(TABLE_WIFIS, null, contentValues)
+            if(!wifis.any{ w -> w.roomid == wifi.roomid}) {
+                val contentValues = ContentValues()
+                contentValues.put(KEY_ID, wifi.roomid)
+                contentValues.put(KEY_TIME, wifi.time)
+                // Inserting Row
+                val success = db.insert(TABLE_WIFIS, null, contentValues)
+            }
         }
 
         //2nd argument is String containing nullColumnHack

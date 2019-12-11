@@ -36,15 +36,19 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
     //method to insert data
     fun addUser(user: User):Long{
         val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(KEY_ID, user.uid)
-        contentValues.put(KEY_ACCESS_TOKEN, user.access)
-        contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
-        // Inserting Row
-        val success = db.insert(TABLE_USERS, null, contentValues)
-        //2nd argument is String containing nullColumnHack
-        db.close() // Closing database connection
-        return success
+        val existingUsers = getUser(user.uid)
+        if(!existingUsers.any())
+        {
+            val contentValues = ContentValues()
+            contentValues.put(KEY_ID, user.uid)
+            contentValues.put(KEY_ACCESS_TOKEN, user.access)
+            contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
+            // Inserting Row
+            val success = db.insert(TABLE_USERS, null, contentValues)
+            db.close() // Closing database connection
+            return success
+        }
+        return 0
     }
     //method to get user data
     fun getUser(uid: String):ArrayList<User>{
@@ -56,6 +60,7 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
             cursor = db.rawQuery(selectQuery, null)
         }catch (e: SQLiteException) {
             db.execSQL(CREATE_USER_TABLE)
+            db.close() // Closing database connection
             return ArrayList()
         }
         var userUid: String
@@ -73,18 +78,27 @@ class UserDatabaseService(context: Context): SQLiteOpenHelper(context,DATABASE_N
                 users.add(user)
             } while (cursor.moveToNext())
         }
+        db.close() // Closing database connection
         return users
     }
     //method to update data
     fun updateUser(user: User): Int{
         val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(KEY_ID, user.uid)
-        contentValues.put(KEY_ACCESS_TOKEN, user.access)
-        contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
+        val existingUser = getUser(user.uid)
+        var success = 0
+        if(existingUser.any())
+        {
+            val contentValues = ContentValues()
+            contentValues.put(KEY_ID, user.uid)
+            contentValues.put(KEY_ACCESS_TOKEN, user.access)
+            contentValues.put(KEY_REFRESH_TOKEN,user.refresh )
 
-        // Updating Row
-        val success = db.update(TABLE_USERS, contentValues,"$KEY_ID = " + user.uid,null)
+            // Updating Row
+            success = db.update(TABLE_USERS, contentValues,"$KEY_ID = " + user.uid,null)
+        }else{
+            success = addUser(user).toInt()
+        }
+
         //2nd argument is String containing nullColumnHack
         db.close() // Closing database connection
         return success
